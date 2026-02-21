@@ -1,0 +1,20 @@
+[package]
+name = "mindmap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eframe = "0.31"
+egui = "0.31"
+quick-xml = { version = "0.37", features = ["serialize"] }
+serde = { version = "1", features = ["derive"] }
+rfd = "0.15"
+anyhow = "1"
+thiserror = "2"
+log = "0.4"
+env_logger = "0.11"
+resvg = "0.40"
+
+[profile.release]
+opt-level = 3
+lto = "thin"

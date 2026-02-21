@@ -1,0 +1,424 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3794.8 3210.9" width="3795" height="3211">
+  <style>text { font-family: Virgil, cursive, sans-serif; }</style>
+  <path d="M 1603.6 1605.5 C 1660.7 1605.5 1689.2 946.5 1746.4 946.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2013.6 946.5 C 2082.4 946.5 2116.9 297.8 2185.7 297.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2294.3 297.8 C 2368.0 297.8 2404.8 59.6 2478.5 59.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2294.3 297.8 C 2375.8 297.8 2416.6 161.8 2498.1 161.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2701.9 161.8 C 2782.6 161.8 2823.0 128.0 2903.7 128.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2701.9 161.8 C 2781.3 161.8 2821.1 195.6 2900.5 195.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2294.3 297.8 C 2400.3 297.8 2453.3 330.8 2559.4 330.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2640.6 330.8 C 2747.8 330.8 2801.4 263.2 2908.6 263.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2640.6 330.8 C 2749.4 330.8 2803.8 330.8 2912.6 330.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2640.6 330.8 C 2752.4 330.8 2808.3 398.4 2920.0 398.4" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2294.3 297.8 C 2382.6 297.8 2426.7 466.8 2515.0 466.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2294.3 297.8 C 2369.9 297.8 2407.7 535.9 2483.3 535.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2013.6 946.5 C 2084.9 946.5 2120.5 674.3 2191.7 674.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2288.3 674.3 C 2370.3 674.3 2411.3 605.1 2493.3 605.1" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2288.3 674.3 C 2373.5 674.3 2416.1 674.3 2501.3 674.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2288.3 674.3 C 2376.5 674.3 2420.7 743.5 2508.9 743.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2013.6 946.5 C 2086.8 946.5 2123.3 847.3 2196.5 847.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2283.5 847.3 C 2375.6 847.3 2421.6 812.7 2513.7 812.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2283.5 847.3 C 2382.5 847.3 2432.0 881.9 2531.0 881.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2013.6 946.5 C 2054.4 946.5 2074.8 951.5 2115.5 951.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2013.6 946.5 C 2074.1 946.5 2104.4 1427.2 2164.9 1427.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2315.1 1427.2 C 2384.7 1427.2 2419.5 1427.2 2489.1 1427.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2756.2 1427.2 2778.8 1020.3 2824.0 1020.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2775.5 1427.2 2807.8 1206.9 2872.5 1206.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3047.5 1206.9 C 3124.8 1206.9 3163.4 1121.7 3240.6 1121.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3399.4 1121.7 C 3481.7 1121.7 3522.9 1087.9 3605.2 1087.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3399.4 1121.7 C 3483.5 1121.7 3525.6 1155.5 3609.8 1155.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3047.5 1206.9 C 3112.8 1206.9 3145.4 1223.0 3210.6 1223.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3047.5 1206.9 C 3106.5 1206.9 3136.0 1308.2 3194.9 1308.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2765.0 1427.2 2792.0 1427.2 2846.1 1427.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3073.9 1427.2 C 3145.3 1427.2 3181.0 1393.5 3252.3 1393.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3073.9 1427.2 C 3116.7 1427.2 3138.2 1461.0 3181.0 1461.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2773.6 1427.2 2805.0 1562.4 2867.7 1562.4" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3052.3 1562.4 C 3129.5 1562.4 3168.1 1528.6 3245.2 1528.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3052.3 1562.4 C 3122.8 1562.4 3158.1 1596.2 3228.6 1596.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2775.8 1427.2 2808.2 1715.2 2873.0 1715.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3047.0 1715.2 C 3107.1 1715.2 3137.2 1672.6 3197.3 1672.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3047.0 1715.2 C 3118.5 1715.2 3154.2 1757.8 3225.7 1757.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2710.9 1427.2 C 2763.7 1427.2 2790.1 1834.2 2842.9 1834.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1603.6 1605.5 C 1663.9 1605.5 1694.1 2361.1 1754.4 2361.1" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2005.6 2361.1 C 2083.4 2361.1 2122.2 2326.1 2200.0 2326.1" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2392.0 2326.1 2448.0 1916.6 2560.0 1916.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2386.0 2326.1 2439.0 1985.8 2545.0 1985.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2392.0 2326.1 2448.0 2055.0 2560.0 2055.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2392.0 2326.1 2448.0 2124.2 2560.0 2124.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2392.0 2326.1 2448.0 2193.3 2560.0 2193.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2375.3 2326.1 2423.0 2262.5 2518.3 2262.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2389.2 2326.1 2443.8 2364.7 2553.1 2364.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2646.9 2364.7 C 2742.0 2364.7 2789.5 2330.9 2884.6 2330.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2646.9 2364.7 C 2748.4 2364.7 2799.1 2398.5 2900.6 2398.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2280.0 2326.1 C 2381.2 2326.1 2431.8 2601.3 2533.0 2601.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2667.0 2601.3 C 2768.2 2601.3 2818.8 2533.7 2920.0 2533.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3000.0 2533.7 C 3112.0 2533.7 3168.0 2533.7 3280.0 2533.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3360.0 2533.7 C 3471.8 2533.7 3527.7 2466.1 3639.6 2466.1" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3360.0 2533.7 C 3470.7 2533.7 3526.1 2533.7 3636.8 2533.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3360.0 2533.7 C 3472.0 2533.7 3528.0 2601.3 3640.0 2601.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2667.0 2601.3 C 2768.2 2601.3 2818.8 2702.7 2920.0 2702.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3000.0 2702.7 C 3112.0 2702.7 3168.0 2702.7 3280.0 2702.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3360.0 2702.7 C 3469.3 2702.7 3524.0 2668.9 3633.3 2668.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 3360.0 2702.7 C 3471.8 2702.7 3527.7 2736.5 3639.6 2736.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 2005.6 2361.1 C 2077.7 2361.1 2113.8 2805.3 2185.8 2805.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1603.6 1605.5 C 1693.6 1605.5 1738.7 2890.5 1828.8 2890.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1436.4 1605.5 C 1352.7 1605.5 1310.8 1605.5 1227.0 1605.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 994.1 1605.5 944.7 777.2 845.8 777.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 754.2 777.2 C 659.3 777.2 611.8 708.0 516.9 708.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 754.2 777.2 C 657.1 777.2 608.6 777.2 511.5 777.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 754.2 777.2 C 662.1 777.2 616.1 846.4 524.0 846.4" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 991.8 1605.5 941.2 1192.3 840.0 1192.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 656.3 1192.3 604.4 915.5 500.7 915.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 650.0 1192.3 595.0 984.7 485.1 984.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 669.6 1192.3 624.4 1053.9 533.9 1053.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 665.9 1192.3 618.8 1123.1 524.7 1123.1" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 655.5 1192.3 603.3 1192.3 498.9 1192.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 659.2 1192.3 608.7 1261.5 507.9 1261.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 663.3 1192.3 614.9 1330.7 518.2 1330.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 656.8 1192.3 605.2 1399.9 502.0 1399.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 760.0 1192.3 C 674.4 1192.3 631.6 1469.0 546.0 1469.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 994.7 1605.5 945.6 1915.6 847.3 1915.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 643.6 1915.6 589.1 1538.2 480.0 1538.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 653.9 1915.6 604.5 1640.4 505.6 1640.4" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 374.4 1640.4 C 272.6 1640.4 221.8 1606.6 120.0 1606.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 374.4 1640.4 C 272.6 1640.4 221.8 1674.2 120.0 1674.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 658.6 1915.6 611.6 1742.6 517.6 1742.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 362.4 1742.6 C 265.5 1742.6 217.0 1742.6 120.0 1742.6" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 680.6 1915.6 644.6 1811.8 572.5 1811.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 662.8 1915.6 617.8 1881.0 527.9 1881.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 352.1 1881.0 C 259.3 1881.0 212.9 1881.0 120.0 1881.0" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 665.8 1915.6 622.4 1950.2 535.6 1950.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 344.4 1950.2 C 254.7 1950.2 209.8 1950.2 120.0 1950.2" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 661.6 1915.6 616.0 2019.4 524.9 2019.4" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 655.1 1915.6 606.3 2121.5 508.7 2121.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 371.3 2121.5 C 270.8 2121.5 220.5 2087.8 120.0 2087.8" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 371.3 2121.5 C 270.8 2121.5 220.5 2155.3 120.0 2155.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 655.4 1915.6 606.8 2223.7 509.6 2223.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 370.4 2223.7 C 270.3 2223.7 220.2 2223.7 120.0 2223.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 752.7 1915.6 C 658.2 1915.6 610.9 2292.9 516.4 2292.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 363.6 2292.9 C 266.2 2292.9 217.4 2292.9 120.0 2292.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 992.3 1605.5 942.0 2362.5 841.3 2362.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 994.0 1605.5 944.4 2432.5 845.4 2432.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1093.0 1605.5 C 1000.1 1605.5 953.6 2502.5 860.7 2502.5" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1603.6 1605.5 C 1696.3 1605.5 1742.6 2976.9 1835.3 2976.9" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1603.6 1605.5 C 1669.8 1605.5 1702.9 3063.3 1769.1 3063.3" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <path d="M 1603.6 1605.5 C 1691.7 1605.5 1735.8 3149.7 1824.0 3149.7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+  <rect x="1436.4" y="1567.5" width="167.1" height="76.0" rx="6" ry="6" fill="white"/>
+  <rect x="1436.4" y="1567.5" width="167.1" height="76.0" rx="6" ry="6" fill="#FFFFFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1520.0" y="1594.5" text-anchor="middle" font-size="22.0" font-weight="normal" fill="#1E1E1E">STO Cloud </text>
+  <text x="1520.0" y="1623.1" text-anchor="middle" font-size="22.0" font-weight="normal" fill="#1E1E1E">Operations</text>
+  <rect x="1746.4" y="925.3" width="267.2" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1746.4" y="925.3" width="267.2" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="949.2" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">Cloud Foundation Services</text>
+  <rect x="2185.7" y="277.8" width="108.6" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2185.7" y="277.8" width="108.6" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="300.2" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">CloudOps</text>
+  <rect x="2478.5" y="40.0" width="243.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2478.5" y="40.0" width="243.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="61.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Provide MultiCloud Support</text>
+  <rect x="2498.1" y="142.2" width="203.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2498.1" y="142.2" width="203.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="164.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Resource Management</text>
+  <rect x="2903.7" y="109.2" width="112.6" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2903.7" y="109.2" width="112.6" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="130.1" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Onboarding</text>
+  <rect x="2900.5" y="176.8" width="119.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2900.5" y="176.8" width="119.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="197.7" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Offboarding</text>
+  <rect x="2559.4" y="311.2" width="81.3" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2559.4" y="311.2" width="81.3" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="333.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">ITSM</text>
+  <rect x="2908.6" y="244.4" width="102.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2908.6" y="244.4" width="102.8" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="265.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Incidents</text>
+  <rect x="2912.6" y="312.0" width="94.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2912.6" y="312.0" width="94.8" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="332.9" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Changes</text>
+  <rect x="2920.0" y="379.6" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2920.0" y="379.6" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="400.5" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">RITM</text>
+  <rect x="2515.0" y="447.2" width="170.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2515.0" y="447.2" width="170.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="469.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Capacity Planning</text>
+  <rect x="2483.3" y="516.3" width="233.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2483.3" y="516.3" width="233.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="538.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Service Level Management</text>
+  <rect x="2191.7" y="654.3" width="96.6" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2191.7" y="654.3" width="96.6" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="676.7" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">SecOPs</text>
+  <rect x="2493.3" y="585.5" width="213.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2493.3" y="585.5" width="213.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="607.4" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Compliance Management</text>
+  <rect x="2501.3" y="654.7" width="197.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2501.3" y="654.7" width="197.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="676.6" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Security Management</text>
+  <rect x="2508.9" y="723.9" width="182.2" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2508.9" y="723.9" width="182.2" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="745.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Patch Management</text>
+  <rect x="2196.5" y="827.3" width="87.0" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2196.5" y="827.3" width="87.0" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="849.7" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">FinOps</text>
+  <rect x="2513.7" y="793.1" width="172.6" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2513.7" y="793.1" width="172.6" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="814.9" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Cost Management</text>
+  <rect x="2531.0" y="862.3" width="138.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2531.0" y="862.3" width="138.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="884.1" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Dashboarding</text>
+  <rect x="2115.5" y="931.5" width="249.0" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2115.5" y="931.5" width="249.0" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="953.9" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Cloud Account Management</text>
+  <rect x="2164.9" y="1407.2" width="150.2" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2164.9" y="1407.2" width="150.2" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="1429.6" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">STO CloudOps</text>
+  <rect x="2489.1" y="1407.6" width="221.9" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2489.1" y="1407.6" width="221.9" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="1429.5" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Roles and Responsibities</text>
+  <rect x="2824.0" y="1001.5" width="271.9" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2824.0" y="1001.5" width="271.9" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1022.4" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Certificate Lifecycle Management</text>
+  <rect x="2872.5" y="1188.1" width="175.1" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2872.5" y="1188.1" width="175.1" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1209.0" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Access Management</text>
+  <rect x="3240.6" y="1102.9" width="158.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3240.6" y="1102.9" width="158.8" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1123.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Break the Glass</text>
+  <rect x="3605.2" y="1069.1" width="149.5" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3605.2" y="1069.1" width="149.5" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="1090.0" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Access Request</text>
+  <rect x="3609.8" y="1136.7" width="140.4" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3609.8" y="1136.7" width="140.4" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="1157.6" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Access Revoke</text>
+  <rect x="3210.6" y="1204.2" width="218.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3210.6" y="1204.2" width="218.8" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1225.1" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Quarterly Access Reviews</text>
+  <rect x="3194.9" y="1271.8" width="250.2" height="72.8" rx="6" ry="6" fill="white"/>
+  <rect x="3194.9" y="1271.8" width="250.2" height="72.8" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1292.1" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Access management for AWS </text>
+  <text x="3320.0" y="1310.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">console for roles managed by </text>
+  <text x="3320.0" y="1328.5" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">CloudOps</text>
+  <rect x="2846.1" y="1399.7" width="227.8" height="55.2" rx="6" ry="6" fill="white"/>
+  <rect x="2846.1" y="1399.7" width="227.8" height="55.2" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1420.2" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Onboarding/Offboarding of </text>
+  <text x="2960.0" y="1438.4" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Tenants</text>
+  <rect x="3252.3" y="1374.7" width="135.3" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3252.3" y="1374.7" width="135.3" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1395.6" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Role Creation</text>
+  <rect x="3181.0" y="1442.2" width="278.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3181.0" y="1442.2" width="278.0" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1463.1" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Setting Cross Account Permissions</text>
+  <rect x="2867.7" y="1543.6" width="184.7" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2867.7" y="1543.6" width="184.7" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1564.5" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Incident Management</text>
+  <rect x="3245.2" y="1509.8" width="149.5" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3245.2" y="1509.8" width="149.5" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1530.7" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">On-Call Support</text>
+  <rect x="3228.6" y="1577.4" width="182.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3228.6" y="1577.4" width="182.8" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1598.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Backup and Restore</text>
+  <rect x="2873.0" y="1696.4" width="174.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2873.0" y="1696.4" width="174.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1717.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">SecOps Governance</text>
+  <rect x="3197.3" y="1645.0" width="245.4" height="55.2" rx="6" ry="6" fill="white"/>
+  <rect x="3197.3" y="1645.0" width="245.4" height="55.2" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1665.6" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Remediate OS vulnerabilities </text>
+  <text x="3320.0" y="1683.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">where applicable.</text>
+  <rect x="3225.7" y="1730.2" width="188.6" height="55.2" rx="6" ry="6" fill="white"/>
+  <rect x="3225.7" y="1730.2" width="188.6" height="55.2" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="1750.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Report out NCs and </text>
+  <text x="3320.0" y="1769.0" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Vulnerabilities</text>
+  <rect x="2842.9" y="1815.4" width="234.3" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2842.9" y="1815.4" width="234.3" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="1836.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">New Environment Deployment</text>
+  <rect x="1754.4" y="2339.9" width="251.2" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1754.4" y="2339.9" width="251.2" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="2363.8" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">Cloud Platform Services</text>
+  <rect x="2200.0" y="2306.1" width="80.0" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2200.0" y="2306.1" width="80.0" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="2328.5" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">STO</text>
+  <rect x="2560.0" y="1897.0" width="80.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2560.0" y="1897.0" width="80.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="1918.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">HAI</text>
+  <rect x="2545.0" y="1966.2" width="110.1" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2545.0" y="1966.2" width="110.1" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="1988.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">AI Fabric</text>
+  <rect x="2560.0" y="2035.4" width="80.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2560.0" y="2035.4" width="80.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2057.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">DHS</text>
+  <rect x="2560.0" y="2104.6" width="80.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2560.0" y="2104.6" width="80.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2126.4" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">PIA</text>
+  <rect x="2560.0" y="2173.8" width="80.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2560.0" y="2173.8" width="80.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2195.6" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">IPM</text>
+  <rect x="2518.3" y="2242.9" width="163.5" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2518.3" y="2242.9" width="163.5" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2264.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">ME Environments</text>
+  <rect x="2553.1" y="2345.1" width="93.9" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2553.1" y="2345.1" width="93.9" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2367.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">CI4Ops</text>
+  <rect x="2884.6" y="2312.1" width="150.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2884.6" y="2312.1" width="150.8" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="2333.0" text-anchor="middle" font-size="14.0" font-weight="bold" fill="#1E1E1E">Command Center</text>
+  <rect x="2900.6" y="2379.7" width="118.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2900.6" y="2379.7" width="118.8" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="2400.6" text-anchor="middle" font-size="14.0" font-weight="bold" fill="#1E1E1E">Hospital AI</text>
+  <rect x="2533.0" y="2581.7" width="134.1" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="2533.0" y="2581.7" width="134.1" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2600.0" y="2603.5" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Data Fabric</text>
+  <rect x="2920.0" y="2514.9" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2920.0" y="2514.9" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="2535.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">DCC</text>
+  <rect x="3280.0" y="2514.9" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3280.0" y="2514.9" width="80.0" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="2535.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Team</text>
+  <rect x="3639.6" y="2447.3" width="80.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3639.6" y="2447.3" width="80.8" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="2468.2" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Salam</text>
+  <rect x="3636.8" y="2514.9" width="86.4" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3636.8" y="2514.9" width="86.4" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="2535.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Sairam</text>
+  <rect x="3640.0" y="2582.5" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3640.0" y="2582.5" width="80.0" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="2603.4" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Rama</text>
+  <rect x="2920.0" y="2683.9" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="2920.0" y="2683.9" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2960.0" y="2704.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">DPSA</text>
+  <rect x="3280.0" y="2683.9" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3280.0" y="2683.9" width="80.0" height="37.6" rx="6" ry="6" fill="#EADEF8" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3320.0" y="2704.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Team</text>
+  <rect x="3633.3" y="2650.1" width="93.3" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3633.3" y="2650.1" width="93.3" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="2671.0" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Kamlesh</text>
+  <rect x="3639.6" y="2717.7" width="80.8" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="3639.6" y="2717.7" width="80.8" height="37.6" rx="6" ry="6" fill="#D2F2EE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="3680.0" y="2738.6" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Salam</text>
+  <rect x="2185.8" y="2785.3" width="108.3" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="2185.8" y="2785.3" width="108.3" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="2240.0" y="2807.7" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Non STO</text>
+  <rect x="1828.8" y="2869.3" width="102.5" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1828.8" y="2869.3" width="102.5" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="2893.2" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">NetOps</text>
+  <rect x="1093.0" y="1584.2" width="134.0" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1093.0" y="1584.2" width="134.0" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1160.0" y="1608.2" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">Will Yankow</text>
+  <rect x="754.2" y="757.2" width="91.6" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="754.2" y="757.2" width="91.6" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="779.6" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Pankaj</text>
+  <rect x="363.1" y="688.4" width="153.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="363.1" y="688.4" width="153.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="710.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sadhna Thakur</text>
+  <rect x="368.5" y="757.6" width="143.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="368.5" y="757.6" width="143.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="779.4" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Kiran Masana</text>
+  <rect x="356.0" y="826.8" width="168.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="356.0" y="826.8" width="168.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="848.6" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Rajesh Arumugam</text>
+  <rect x="760.0" y="1172.3" width="80.0" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="760.0" y="1172.3" width="80.0" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="1194.7" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Batu</text>
+  <rect x="379.3" y="896.0" width="121.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="379.3" y="896.0" width="121.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="917.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Chaithanya</text>
+  <rect x="394.9" y="965.1" width="90.2" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="394.9" y="965.1" width="90.2" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="987.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Harsha</text>
+  <rect x="346.1" y="1034.3" width="187.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="346.1" y="1034.3" width="187.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1056.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Pridhvi Melam Naidu</text>
+  <rect x="355.3" y="1103.5" width="169.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="355.3" y="1103.5" width="169.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1125.4" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sudharshan Jinka</text>
+  <rect x="381.1" y="1172.7" width="117.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="381.1" y="1172.7" width="117.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1194.5" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Lokeshwari</text>
+  <rect x="372.1" y="1241.9" width="135.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="372.1" y="1241.9" width="135.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1263.7" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Lalit Dathla</text>
+  <rect x="361.8" y="1311.1" width="156.3" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="361.8" y="1311.1" width="156.3" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1332.9" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sheetal Ghokde</text>
+  <rect x="378.0" y="1380.3" width="123.9" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="378.0" y="1380.3" width="123.9" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1402.1" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Subbareddy</text>
+  <rect x="334.0" y="1449.5" width="211.9" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="334.0" y="1449.5" width="211.9" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1471.3" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sakthivel Ravichandran</text>
+  <rect x="752.7" y="1895.6" width="94.6" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="752.7" y="1895.6" width="94.6" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="1918.0" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Krishna</text>
+  <rect x="400.0" y="1518.6" width="80.0" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="400.0" y="1518.6" width="80.0" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1540.5" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="374.4" y="1620.8" width="131.2" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="374.4" y="1620.8" width="131.2" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1642.7" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Abdul Salam</text>
+  <rect x="40.0" y="1587.8" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="1587.8" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="1608.7" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="40.0" y="1655.4" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="1655.4" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="1676.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">CIO</text>
+  <rect x="362.4" y="1723.0" width="155.1" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="362.4" y="1723.0" width="155.1" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1744.9" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Agung Gunawan</text>
+  <rect x="40.0" y="1723.8" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="1723.8" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="1744.7" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="307.5" y="1792.2" width="264.9" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="307.5" y="1792.2" width="264.9" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1814.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Manu Balakrishnan Sreekumari</text>
+  <rect x="352.1" y="1861.4" width="175.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="352.1" y="1861.4" width="175.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1883.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Kamlesh Kushwaha</text>
+  <rect x="40.0" y="1862.2" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="1862.2" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="1883.1" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="344.4" y="1930.6" width="191.1" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="344.4" y="1930.6" width="191.1" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="1952.4" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sundar Ramanathan</text>
+  <rect x="40.0" y="1931.4" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="1931.4" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="1952.3" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="355.1" y="1999.8" width="169.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="355.1" y="1999.8" width="169.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="2021.6" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Suman Kaithepalli</text>
+  <rect x="371.3" y="2102.0" width="137.4" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="371.3" y="2102.0" width="137.4" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="2123.8" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Rama Danda</text>
+  <rect x="40.0" y="2069.0" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="2069.0" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="2089.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">AWS</text>
+  <rect x="40.0" y="2136.5" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="2136.5" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="2157.4" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">Azure</text>
+  <rect x="370.4" y="2204.1" width="139.1" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="370.4" y="2204.1" width="139.1" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="2226.0" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sabarinathan</text>
+  <rect x="40.0" y="2204.9" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="2204.9" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="2225.8" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">IDAM</text>
+  <rect x="363.6" y="2273.3" width="152.8" height="39.2" rx="6" ry="6" fill="white"/>
+  <rect x="363.6" y="2273.3" width="152.8" height="39.2" rx="6" ry="6" fill="#DCF5DE" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="440.0" y="2295.2" text-anchor="middle" font-size="15.0" font-weight="normal" fill="#1E1E1E">Sandeep Yadav</text>
+  <rect x="40.0" y="2274.1" width="80.0" height="37.6" rx="6" ry="6" fill="white"/>
+  <rect x="40.0" y="2274.1" width="80.0" height="37.6" rx="6" ry="6" fill="#FFEAD2" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="80.0" y="2295.0" text-anchor="middle" font-size="14.0" font-weight="normal" fill="#1E1E1E">IDAM</text>
+  <rect x="758.7" y="2342.5" width="82.6" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="758.7" y="2342.5" width="82.6" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="2364.9" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">David</text>
+  <rect x="754.6" y="2412.5" width="90.8" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="754.6" y="2412.5" width="90.8" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="2434.9" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Sairam</text>
+  <rect x="739.3" y="2482.5" width="121.3" height="40.0" rx="6" ry="6" fill="white"/>
+  <rect x="739.3" y="2482.5" width="121.3" height="40.0" rx="6" ry="6" fill="#FFE0E4" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="800.0" y="2504.9" text-anchor="middle" font-size="16.0" font-weight="normal" fill="#1E1E1E">Adam Sulik</text>
+  <rect x="1835.3" y="2955.7" width="89.3" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1835.3" y="2955.7" width="89.3" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="2979.6" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">David</text>
+  <rect x="1769.1" y="3042.1" width="221.7" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1769.1" y="3042.1" width="221.7" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="3066.0" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">Automation - Future</text>
+  <rect x="1824.0" y="3128.5" width="112.1" height="42.4" rx="6" ry="6" fill="white"/>
+  <rect x="1824.0" y="3128.5" width="112.1" height="42.4" rx="6" ry="6" fill="#D6ECFF" fill-opacity="0.7" stroke="#1E1E1E" stroke-width="1.5"/>
+  <text x="1880.0" y="3152.4" text-anchor="middle" font-size="18.0" font-weight="normal" fill="#1E1E1E">EdgeOps</text>
+</svg>
