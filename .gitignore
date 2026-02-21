@@ -1,6 +1,7 @@
 /target/
 *.pdb
 /.claude/
+CLAUDE.md
 Thumbs.db
 Desktop.ini
 .DS_Store
@@ -10,3 +11,4 @@ Desktop.ini
 .vscode/
 .idea/
 .env
+target/installer/
