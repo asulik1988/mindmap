@@ -5,7 +5,11 @@ pub fn export_opml(tree: &MindmapTree) -> String {
     let mut out = String::new();
     let _ = writeln!(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     let _ = writeln!(out, "<opml version=\"2.0\">");
-    let _ = writeln!(out, "  <head><title>{}</title></head>", xml_escape(&tree.nodes[tree.root].text));
+    let _ = writeln!(
+        out,
+        "  <head><title>{}</title></head>",
+        xml_escape(&tree.nodes[tree.root].text)
+    );
     let _ = writeln!(out, "  <body>");
     write_node_opml(tree, tree.root, 2, &mut out);
     let _ = writeln!(out, "  </body>");
@@ -29,7 +33,11 @@ fn write_node_opml(tree: &MindmapTree, id: NodeId, indent: usize, out: &mut Stri
             let _ = writeln!(out, "{}<outline text=\"{}\">", pad, text_attr);
         } else {
             let note_attr = xml_escape(&node.notes);
-            let _ = writeln!(out, "{}<outline text=\"{}\" _note=\"{}\">", pad, text_attr, note_attr);
+            let _ = writeln!(
+                out,
+                "{}<outline text=\"{}\" _note=\"{}\">",
+                pad, text_attr, note_attr
+            );
         }
         for &child_id in &node.children {
             write_node_opml(tree, child_id, indent + 1, out);
@@ -39,7 +47,11 @@ fn write_node_opml(tree: &MindmapTree, id: NodeId, indent: usize, out: &mut Stri
         let _ = writeln!(out, "{}<outline text=\"{}\"/>", pad, text_attr);
     } else {
         let note_attr = xml_escape(&node.notes);
-        let _ = writeln!(out, "{}<outline text=\"{}\" _note=\"{}\"/>", pad, text_attr, note_attr);
+        let _ = writeln!(
+            out,
+            "{}<outline text=\"{}\" _note=\"{}\"/>",
+            pad, text_attr, note_attr
+        );
     }
 }
 

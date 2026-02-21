@@ -98,8 +98,7 @@ pub fn load_mm_file(path: &Path) -> Result<MindmapTree> {
 }
 
 pub fn parse_mm_xml(xml: &str) -> Result<MindmapTree> {
-    let map: FreeMindMap =
-        quick_xml::de::from_str(xml).context("Failed to parse FreeMind XML")?;
+    let map: FreeMindMap = quick_xml::de::from_str(xml).context("Failed to parse FreeMind XML")?;
 
     let mut nodes = Vec::new();
     let root_id = convert_node(&map.node, None, &mut nodes);
@@ -112,15 +111,15 @@ fn convert_node(
     nodes: &mut Vec<MindmapNode>,
 ) -> usize {
     let id = nodes.len();
-    let freemind_id = fm_node
-        .id
-        .clone()
-        .unwrap_or_else(|| format!("ID_{}", id));
+    let freemind_id = fm_node.id.clone().unwrap_or_else(|| format!("ID_{}", id));
 
     let mut node = MindmapNode::new(id, freemind_id, fm_node.text.clone());
     node.parent = parent;
     node.color = fm_node.color.as_deref().and_then(parse_hex_color);
-    node.background_color = fm_node.background_color.as_deref().and_then(parse_hex_color);
+    node.background_color = fm_node
+        .background_color
+        .as_deref()
+        .and_then(parse_hex_color);
     node.position = fm_node.position.as_deref().map(|p| match p {
         "left" => Side::Left,
         _ => Side::Right,
@@ -137,24 +136,26 @@ fn convert_node(
 
     if let Some(ref font) = fm_node.font {
         node.bold = font.bold.as_deref() == Some("true");
-        node.font_size = font
-            .size
-            .as_deref()
-            .and_then(|s| s.parse::<f32>().ok());
+        node.font_size = font.size.as_deref().and_then(|s| s.parse::<f32>().ok());
         node.font_name = font.name.clone();
     }
 
     node.link = fm_node.link.clone();
 
-    node.notes = fm_node.richcontent.iter()
+    node.notes = fm_node
+        .richcontent
+        .iter()
         .find(|rc| rc.r#type == "NOTE")
         .and_then(|rc| rc.html.as_ref())
         .and_then(|h| h.body.as_ref())
-        .map(|body| body.paragraphs.iter()
-            .map(|p| p.text.trim().to_string())
-            .filter(|s| !s.is_empty())
-            .collect::<Vec<_>>()
-            .join("\n"))
+        .map(|body| {
+            body.paragraphs
+                .iter()
+                .map(|p| p.text.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n")
+        })
         .unwrap_or_default();
 
     // Push node first (reserves the index), then process children

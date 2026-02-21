@@ -2,6 +2,8 @@
 name = "mindmap"
 version = "0.1.0"
 edition = "2021"
+description = "A hand-drawn mind mapping tool for FreeMind .mm files"
+readme = "README.md"
 
 [dependencies]
 eframe = "0.31"

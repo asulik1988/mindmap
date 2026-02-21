@@ -1,7 +1,7 @@
-use crate::model::{MindmapTree, NodeId, NodeState};
 use crate::canvas::viewport::Viewport;
 use crate::history::{Action, History};
-use egui::{Rect, Ui, TextEdit, FontId, Vec2};
+use crate::model::{MindmapTree, NodeId, NodeState};
+use egui::{FontId, Rect, TextEdit, Ui, Vec2};
 
 /// Signals from the edit overlay back to the app loop.
 #[derive(Debug, Clone, PartialEq)]
@@ -143,9 +143,10 @@ impl EditingState {
                 TextEdit::singleline(&mut self.text_buffer)
                     .font(FontId::proportional(font_size))
                     .desired_width(text_edit_width)
-                    .hint_text(egui::RichText::new("…").color(
-                        egui::Color32::from_rgba_unmultiplied(128, 128, 120, 76),
-                    )),
+                    .hint_text(
+                        egui::RichText::new("…")
+                            .color(egui::Color32::from_rgba_unmultiplied(128, 128, 120, 76)),
+                    ),
             );
 
             // Request focus on first frame
@@ -154,7 +155,9 @@ impl EditingState {
                 // Move cursor to end
                 if let Some(mut state) = TextEdit::load_state(ui.ctx(), response.id) {
                     let ccursor = egui::text::CCursor::new(self.text_buffer.chars().count());
-                    state.cursor.set_char_range(Some(egui::text::CCursorRange::one(ccursor)));
+                    state
+                        .cursor
+                        .set_char_range(Some(egui::text::CCursorRange::one(ccursor)));
                     state.store(ui.ctx(), response.id);
                 }
                 self.just_started = false;

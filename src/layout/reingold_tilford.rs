@@ -1,5 +1,5 @@
-use crate::model::{MindmapTree, NodeId, Side};
 use super::spacing::{LEVEL_GAP, SIBLING_GAP, SUBTREE_GAP};
+use crate::model::{MindmapTree, NodeId, Side};
 use egui::Pos2;
 
 /// Run the layout algorithm, assigning `layout_pos` to all visible nodes.
@@ -47,8 +47,8 @@ fn layout_side(tree: &mut MindmapTree, children: &[NodeId], x_direction: f32) {
         subtree_heights.push(h);
     }
 
-    let total_height: f32 = subtree_heights.iter().sum::<f32>()
-        + SUBTREE_GAP * (children.len() as f32 - 1.0).max(0.0);
+    let total_height: f32 =
+        subtree_heights.iter().sum::<f32>() + SUBTREE_GAP * (children.len() as f32 - 1.0).max(0.0);
 
     // Position children vertically, centered around y=0
     let mut current_y = -total_height / 2.0;
@@ -57,7 +57,14 @@ fn layout_side(tree: &mut MindmapTree, children: &[NodeId], x_direction: f32) {
         let subtree_h = subtree_heights[i];
         let center_y = current_y + subtree_h / 2.0;
 
-        layout_subtree(tree, child_id, LEVEL_GAP * x_direction, center_y, 1, x_direction);
+        layout_subtree(
+            tree,
+            child_id,
+            LEVEL_GAP * x_direction,
+            center_y,
+            1,
+            x_direction,
+        );
 
         current_y += subtree_h + SUBTREE_GAP;
     }
@@ -89,8 +96,8 @@ fn layout_subtree(
         subtree_heights.push(compute_subtree_height(tree, child_id));
     }
 
-    let total_height: f32 = subtree_heights.iter().sum::<f32>()
-        + SIBLING_GAP * (children.len() as f32 - 1.0).max(0.0);
+    let total_height: f32 =
+        subtree_heights.iter().sum::<f32>() + SIBLING_GAP * (children.len() as f32 - 1.0).max(0.0);
 
     let child_x = x + LEVEL_GAP * x_direction;
     let mut current_y = y - total_height / 2.0;

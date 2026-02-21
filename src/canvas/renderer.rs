@@ -1,9 +1,9 @@
 use super::{edge_renderer, grid, node_renderer, viewport::Viewport};
 use crate::interaction::input::DragState;
+use crate::model::NodeId;
 use crate::model::{MindmapTree, Selection};
 use crate::style::colors::DepthColorConfig;
 use crate::style::wobble::{self, RoughOptions};
-use crate::model::NodeId;
 use egui::{epaint::PathShape, Color32, Painter, Rect, Stroke};
 use std::collections::{HashMap, HashSet};
 
@@ -30,7 +30,15 @@ pub fn draw_canvas(
     let visible = tree.visible_nodes();
 
     // 3. Draw edges (behind nodes)
-    edge_renderer::draw_edges(painter, tree, &visible, viewport, screen_rect, color_config, dark_mode);
+    edge_renderer::draw_edges(
+        painter,
+        tree,
+        &visible,
+        viewport,
+        screen_rect,
+        color_config,
+        dark_mode,
+    );
 
     let dragged_node_id = drag_state.as_ref().map(|ds| ds.node_id);
 
@@ -52,10 +60,26 @@ pub fn draw_canvas(
         }
 
         // Dim the dragged node to 30% opacity
-        let alpha = if dragged_node_id == Some(node_id) { 0.3 } else { 1.0 };
+        let alpha = if dragged_node_id == Some(node_id) {
+            0.3
+        } else {
+            1.0
+        };
         let is_search_match = search_matches.contains(&node_id);
         let is_current_search = search_current == Some(node_id);
-        let rect = node_renderer::draw_node(painter, node, depth, viewport, screen_rect, selection, alpha, color_config, is_search_match, is_current_search, dark_mode);
+        let rect = node_renderer::draw_node(
+            painter,
+            node,
+            depth,
+            viewport,
+            screen_rect,
+            selection,
+            alpha,
+            color_config,
+            is_search_match,
+            is_current_search,
+            dark_mode,
+        );
         node_rects.insert(node_id, rect);
     }
 
@@ -65,7 +89,9 @@ pub fn draw_canvas(
             if let Some(&rect) = node_rects.get(&target_id) {
                 let highlight_rect = rect.expand(4.0);
                 let rounding = 10.0 * viewport.zoom;
-                let seed = (target_id as u32).wrapping_mul(2654435761).wrapping_add(7777);
+                let seed = (target_id as u32)
+                    .wrapping_mul(2654435761)
+                    .wrapping_add(7777);
 
                 // Wobbled highlight border
                 let rough_opts = RoughOptions {
@@ -94,8 +120,8 @@ pub fn draw_canvas(
             depth,
             viewport,
             ghost_center,
-            0.5,  // 50% opacity
-            2.5,  // 2.5 degree clockwise tilt
+            0.5, // 50% opacity
+            2.5, // 2.5 degree clockwise tilt
             color_config,
             dark_mode,
         );

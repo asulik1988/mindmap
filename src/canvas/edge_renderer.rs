@@ -1,8 +1,8 @@
+use super::node_renderer;
+use super::viewport::Viewport;
 use crate::model::{MindmapTree, Side};
 use crate::style::colors::{self, DepthColorConfig};
 use crate::style::wobble::{self, RoughOptions};
-use super::node_renderer;
-use super::viewport::Viewport;
 use egui::{epaint::PathShape, Color32, Painter, Pos2, Rect, Stroke};
 
 /// Draw bezier edges from parent to each visible child.
@@ -40,10 +40,7 @@ pub fn draw_edges(
                         parent.layout_pos.x + parent_size.x / 2.0,
                         parent.layout_pos.y,
                     );
-                    let tgt = Pos2::new(
-                        node.layout_pos.x - child_size.x / 2.0,
-                        node.layout_pos.y,
-                    );
+                    let tgt = Pos2::new(node.layout_pos.x - child_size.x / 2.0, node.layout_pos.y);
                     (src, tgt)
                 }
                 Side::Left => {
@@ -51,10 +48,7 @@ pub fn draw_edges(
                         parent.layout_pos.x - parent_size.x / 2.0,
                         parent.layout_pos.y,
                     );
-                    let tgt = Pos2::new(
-                        node.layout_pos.x + child_size.x / 2.0,
-                        node.layout_pos.y,
-                    );
+                    let tgt = Pos2::new(node.layout_pos.x + child_size.x / 2.0, node.layout_pos.y);
                     (src, tgt)
                 }
             };
@@ -77,11 +71,8 @@ pub fn draw_edges(
                 bowing: 0.3,
                 ..Default::default()
             };
-            let paths = wobble::rough_bezier_edge(
-                src_screen, cp1, cp2, tgt_screen,
-                edge_seed,
-                &rough_opts,
-            );
+            let paths =
+                wobble::rough_bezier_edge(src_screen, cp1, cp2, tgt_screen, edge_seed, &rough_opts);
 
             // Edge color at varying opacity
             let opacity = if child_depth <= 1 { 180 } else { 140 };

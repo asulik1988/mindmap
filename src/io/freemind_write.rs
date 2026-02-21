@@ -44,13 +44,7 @@ fn write_node(tree: &MindmapTree, node_id: usize, out: &mut String, indent: usiz
     }
 
     if let Some(ref c) = node.color {
-        write!(
-            out,
-            " COLOR=\"#{:02x}{:02x}{:02x}\"",
-            c.r(),
-            c.g(),
-            c.b()
-        )?;
+        write!(out, " COLOR=\"#{:02x}{:02x}{:02x}\"", c.r(), c.g(), c.b())?;
     }
 
     if let Some(ts) = node.created {
@@ -107,7 +101,10 @@ fn write_node(tree: &MindmapTree, node_id: usize, out: &mut String, indent: usiz
         }
 
         if has_notes {
-            writeln!(out, "{pad}  <richcontent TYPE=\"NOTE\"><html><head></head><body>")?;
+            writeln!(
+                out,
+                "{pad}  <richcontent TYPE=\"NOTE\"><html><head></head><body>"
+            )?;
             for line in node.notes.lines() {
                 writeln!(out, "{pad}    <p>{}</p>", xml_escape(line))?;
             }

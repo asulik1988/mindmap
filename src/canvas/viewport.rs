@@ -1,8 +1,8 @@
 use egui::{Pos2, Rect, Vec2};
 
 pub struct Viewport {
-    pub offset: Vec2,  // pan offset in screen pixels
-    pub zoom: f32,     // 1.0 = 100%
+    pub offset: Vec2, // pan offset in screen pixels
+    pub zoom: f32,    // 1.0 = 100%
 }
 
 impl Default for Viewport {
@@ -62,9 +62,6 @@ impl Viewport {
 
         // Center the bounds
         let bounds_center = bounds.center();
-        self.offset = Vec2::new(
-            -bounds_center.x * self.zoom,
-            -bounds_center.y * self.zoom,
-        );
+        self.offset = Vec2::new(-bounds_center.x * self.zoom, -bounds_center.y * self.zoom);
     }
 }

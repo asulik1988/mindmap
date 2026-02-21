@@ -1,9 +1,10 @@
+use super::viewport::Viewport;
 use crate::model::{MindmapNode, NodeState, Selection};
 use crate::style::colors::{self, DepthColorConfig};
 use crate::style::wobble::{self, RoughOptions};
-use super::viewport::Viewport;
 use egui::{
-    epaint::{PathShape, RectShape, StrokeKind}, Color32, CornerRadius, FontId, Painter, Pos2, Rect, Stroke, Vec2,
+    epaint::{PathShape, RectShape, StrokeKind},
+    Color32, CornerRadius, FontId, Painter, Pos2, Rect, Stroke, Vec2,
 };
 
 const NODE_PADDING_H: f32 = 20.0;
@@ -86,12 +87,7 @@ pub fn measure_node(node: &MindmapNode, depth: usize, painter: &Painter) -> Vec2
     let max_text_width = MAX_NODE_WIDTH - NODE_PADDING_H * 2.0;
 
     // Use wrapping layout so long text doesn't overflow
-    let galley = painter.layout(
-        node.text.clone(),
-        font_id,
-        Color32::BLACK,
-        max_text_width,
-    );
+    let galley = painter.layout(node.text.clone(), font_id, Color32::BLACK, max_text_width);
     let text_width = galley.size().x.max(MIN_NODE_WIDTH - NODE_PADDING_H * 2.0);
     let text_height = galley.size().y;
 
@@ -141,16 +137,8 @@ pub fn draw_node(
 
     // Determine colors based on state
     let (fill, stroke_color, stroke_width) = match node.state {
-        NodeState::Editing => (
-            Color32::WHITE,
-            SELECTION_COLOR,
-            palette.stroke_width + 1.0,
-        ),
-        _ if is_selected => (
-            palette.fill,
-            SELECTION_COLOR,
-            palette.stroke_width + 0.5,
-        ),
+        NodeState::Editing => (Color32::WHITE, SELECTION_COLOR, palette.stroke_width + 1.0),
+        _ if is_selected => (palette.fill, SELECTION_COLOR, palette.stroke_width + 0.5),
         _ if is_hovered => (
             lighten(palette.fill, 0.05),
             palette.stroke,
@@ -164,7 +152,11 @@ pub fn draw_node(
     let sw = stroke_width * viewport.zoom;
 
     // 1. Background fill — color comes from hatch lines only (like Excalidraw)
-    let node_bg = if dark_mode { Color32::from_rgb(22, 22, 26) } else { Color32::WHITE };
+    let node_bg = if dark_mode {
+        Color32::from_rgb(22, 22, 26)
+    } else {
+        Color32::WHITE
+    };
     painter.add(RectShape::new(
         node_rect,
         cr(rounding),
@@ -184,7 +176,11 @@ pub fn draw_node(
         ..Default::default()
     };
     let hatch_paths = wobble::hachure_fill_rect(
-        node_rect, -41.0, hatch_gap, seed.wrapping_add(5555), &hatch_opts,
+        node_rect,
+        -41.0,
+        hatch_gap,
+        seed.wrapping_add(5555),
+        &hatch_opts,
     );
     let hatch_stroke = Stroke::new(2.0, hatch_color);
     for path in hatch_paths {
@@ -230,7 +226,12 @@ pub fn draw_node(
             bowing: 0.5,
             ..Default::default()
         };
-        let ring_paths = wobble::rough_rounded_rect(ring_rect, ring_rounding, seed.wrapping_add(999), &ring_opts);
+        let ring_paths = wobble::rough_rounded_rect(
+            ring_rect,
+            ring_rounding,
+            seed.wrapping_add(999),
+            &ring_opts,
+        );
         let ring_stroke = Stroke::new(1.5 * viewport.zoom, sel_color);
         for path in ring_paths {
             if path.len() >= 2 {
@@ -276,7 +277,12 @@ pub fn draw_node(
             bowing: 0.5,
             ..Default::default()
         };
-        let ring_paths = wobble::rough_rounded_rect(ring_rect, ring_rounding, seed.wrapping_add(8888), &ring_opts);
+        let ring_paths = wobble::rough_rounded_rect(
+            ring_rect,
+            ring_rounding,
+            seed.wrapping_add(8888),
+            &ring_opts,
+        );
         let ring_stroke = Stroke::new(ring_sw, ring_color);
         for path in ring_paths {
             if path.len() >= 2 {
@@ -286,13 +292,14 @@ pub fn draw_node(
     }
 
     // Text — pin to top-left with padding for stable position across zoom levels
-    let text_pos = Pos2::new(
-        node_rect.min.x + pad_h,
-        node_rect.min.y + pad_v,
-    );
+    let text_pos = Pos2::new(node_rect.min.x + pad_h, node_rect.min.y + pad_v);
     // Bold: draw twice with a small horizontal offset for faux-weight effect
     if node.bold {
-        painter.galley(text_pos + egui::vec2(0.7, 0.0), text_galley.clone(), with_alpha(palette.text, alpha));
+        painter.galley(
+            text_pos + egui::vec2(0.7, 0.0),
+            text_galley.clone(),
+            with_alpha(palette.text, alpha),
+        );
     }
     painter.galley(text_pos, text_galley, with_alpha(palette.text, alpha));
 
@@ -328,7 +335,12 @@ pub fn draw_node(
             disable_multi_stroke: true,
             ..Default::default()
         };
-        let badge_paths = wobble::rough_rounded_rect(badge_rect, badge_h / 2.0, seed.wrapping_add(7777), &badge_opts);
+        let badge_paths = wobble::rough_rounded_rect(
+            badge_rect,
+            badge_h / 2.0,
+            seed.wrapping_add(7777),
+            &badge_opts,
+        );
         let badge_border = Stroke::new(1.0 * viewport.zoom, with_alpha(palette.stroke, alpha));
         for path in badge_paths {
             if path.len() >= 2 {
@@ -420,14 +432,19 @@ pub fn draw_node_ghost(
 
     // 1. Background fill (rotated)
     // For the background, we draw a rotated polygon instead of a rect
-    let ghost_bg = if dark_mode { Color32::from_rgb(22, 22, 26) } else { Color32::WHITE };
+    let ghost_bg = if dark_mode {
+        Color32::from_rgb(22, 22, 26)
+    } else {
+        Color32::WHITE
+    };
     let corners = [
         node_rect.left_top(),
         node_rect.right_top(),
         node_rect.right_bottom(),
         node_rect.left_bottom(),
     ];
-    let rotated_corners: Vec<Pos2> = corners.iter()
+    let rotated_corners: Vec<Pos2> = corners
+        .iter()
         .map(|&p| rotate_point(p, ghost_center, angle_rad))
         .collect();
     painter.add(egui::Shape::convex_polygon(
@@ -444,9 +461,8 @@ pub fn draw_node_ghost(
         disable_multi_stroke: true,
         ..Default::default()
     };
-    let hatch_paths = wobble::hachure_fill_rect(
-        node_rect, -41.0, 5.0, seed.wrapping_add(5555), &hatch_opts,
-    );
+    let hatch_paths =
+        wobble::hachure_fill_rect(node_rect, -41.0, 5.0, seed.wrapping_add(5555), &hatch_opts);
     let hatch_stroke = Stroke::new(2.0, with_alpha(fill, alpha));
     for path in hatch_paths {
         if path.len() >= 2 {
@@ -470,10 +486,7 @@ pub fn draw_node_ghost(
     }
 
     // 3. Text (rotated)
-    let text_pos = Pos2::new(
-        node_rect.min.x + pad_h,
-        node_rect.min.y + pad_v,
-    );
+    let text_pos = Pos2::new(node_rect.min.x + pad_h, node_rect.min.y + pad_v);
     let rotated_text_pos = rotate_point(text_pos, ghost_center, angle_rad);
     let text_galley = painter.layout(
         node.display_text.clone(),
@@ -481,7 +494,11 @@ pub fn draw_node_ghost(
         with_alpha(palette.text, alpha),
         f32::INFINITY,
     );
-    painter.galley(rotated_text_pos, text_galley, with_alpha(palette.text, alpha));
+    painter.galley(
+        rotated_text_pos,
+        text_galley,
+        with_alpha(palette.text, alpha),
+    );
 
     // 4. Fold indicator (if applicable) — same pill style, rotated with the ghost
     if node.folded && !node.children.is_empty() {
@@ -507,7 +524,10 @@ pub fn draw_node_ghost(
             badge_rect.right_top(),
             badge_rect.right_bottom(),
             badge_rect.left_bottom(),
-        ].iter().map(|&p| rotate_point(p, ghost_center, angle_rad)).collect();
+        ]
+        .iter()
+        .map(|&p| rotate_point(p, ghost_center, angle_rad))
+        .collect();
         painter.add(egui::Shape::convex_polygon(
             badge_corners,
             with_alpha(palette.fill, alpha),
@@ -526,12 +546,5 @@ fn lighten(color: Color32, amount: f32) -> Color32 {
     let r = (color.r() as f32 + 255.0 * amount).min(255.0) as u8;
     let g = (color.g() as f32 + 255.0 * amount).min(255.0) as u8;
     let b = (color.b() as f32 + 255.0 * amount).min(255.0) as u8;
-    Color32::from_rgb(r, g, b)
-}
-
-fn darken(color: Color32, amount: f32) -> Color32 {
-    let r = (color.r() as f32 * (1.0 - amount)).max(0.0) as u8;
-    let g = (color.g() as f32 * (1.0 - amount)).max(0.0) as u8;
-    let b = (color.b() as f32 * (1.0 - amount)).max(0.0) as u8;
     Color32::from_rgb(r, g, b)
 }

@@ -19,7 +19,7 @@ pub enum Action {
     DeleteSubtree {
         subtree: Vec<MindmapNode>,
         parent_id: NodeId,
-        child_index: usize,
+        _child_index: usize,
     },
     EditText {
         node_id: NodeId,
@@ -30,7 +30,7 @@ pub enum Action {
         node_id: NodeId,
     },
     MoveSibling {
-        node_id: NodeId,
+        _node_id: NodeId,
         parent_id: NodeId,
         old_index: usize,
         new_index: usize,
@@ -103,10 +103,18 @@ impl History {
         }
     }
 
-    pub fn can_undo(&self) -> bool { !self.undo_stack.is_empty() }
-    pub fn can_redo(&self) -> bool { !self.redo_stack.is_empty() }
-    pub fn is_dirty(&self) -> bool { self.dirty }
-    pub fn mark_clean(&mut self) { self.dirty = false; }
+    pub fn can_undo(&self) -> bool {
+        !self.undo_stack.is_empty()
+    }
+    pub fn can_redo(&self) -> bool {
+        !self.redo_stack.is_empty()
+    }
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
+    }
+    pub fn mark_clean(&mut self) {
+        self.dirty = false;
+    }
 }
 
 fn apply_reverse(tree: &mut MindmapTree, action: &Action) {
@@ -120,7 +128,7 @@ fn apply_reverse(tree: &mut MindmapTree, action: &Action) {
         Action::DeleteSubtree {
             subtree,
             parent_id,
-            child_index,
+            _child_index: _,
         } => {
             // Undo delete: restore the subtree
             if let Some(first) = subtree.first() {
@@ -163,7 +171,9 @@ fn apply_reverse(tree: &mut MindmapTree, action: &Action) {
         } => {
             // Undo move: detach from new_parent, re-insert into old_parent at old_child_index
             tree.nodes[*new_parent].children.retain(|&c| c != *node_id);
-            tree.nodes[*old_parent].children.insert(*old_child_index, *node_id);
+            tree.nodes[*old_parent]
+                .children
+                .insert(*old_child_index, *node_id);
             tree.nodes[*node_id].parent = Some(*old_parent);
             tree.nodes[*node_id].position = old_position.clone();
         }
@@ -188,10 +198,14 @@ fn apply_reverse(tree: &mut MindmapTree, action: &Action) {
                 apply_reverse(tree, action);
             }
         }
-        Action::SetBold { node_id, old_bold, .. } => {
+        Action::SetBold {
+            node_id, old_bold, ..
+        } => {
             tree.nodes[*node_id].bold = *old_bold;
         }
-        Action::SetLink { node_id, old_link, .. } => {
+        Action::SetLink {
+            node_id, old_link, ..
+        } => {
             tree.nodes[*node_id].link = old_link.clone();
         }
     }
@@ -206,7 +220,7 @@ fn apply_forward(tree: &mut MindmapTree, action: &Action) {
         }
         Action::DeleteSubtree {
             subtree,
-            parent_id,
+            parent_id: _,
             ..
         } => {
             if let Some(first) = subtree.first() {
@@ -290,10 +304,14 @@ fn apply_forward(tree: &mut MindmapTree, action: &Action) {
                 apply_forward(tree, action);
             }
         }
-        Action::SetBold { node_id, new_bold, .. } => {
+        Action::SetBold {
+            node_id, new_bold, ..
+        } => {
             tree.nodes[*node_id].bold = *new_bold;
         }
-        Action::SetLink { node_id, new_link, .. } => {
+        Action::SetLink {
+            node_id, new_link, ..
+        } => {
             tree.nodes[*node_id].link = new_link.clone();
         }
     }

@@ -152,9 +152,7 @@ impl MindmapTree {
 
         // Remove from parent's children
         if let Some(parent_id) = self.nodes[node_id].parent {
-            self.nodes[parent_id]
-                .children
-                .retain(|&c| c != node_id);
+            self.nodes[parent_id].children.retain(|&c| c != node_id);
         }
 
         // Save subtree nodes for undo (clone before marking deleted)
@@ -453,7 +451,9 @@ impl MindmapTree {
                     };
                 }
             } else {
-                node.parent = bp_node.parent.map(|old| *id_remap.get(&old).unwrap_or(&old));
+                node.parent = bp_node
+                    .parent
+                    .map(|old| *id_remap.get(&old).unwrap_or(&old));
             }
 
             // Remap children

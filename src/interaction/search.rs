@@ -41,10 +41,6 @@ impl SearchState {
         self.replace_active = false;
     }
 
-    pub fn toggle_replace(&mut self) {
-        self.replace_active = !self.replace_active;
-    }
-
     pub fn update_matches_force(&mut self, tree: &MindmapTree) {
         self.prev_query.clear();
         self.update_matches(tree);

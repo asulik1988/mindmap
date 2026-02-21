@@ -1,16 +1,16 @@
 use crate::canvas::renderer::NodeRects;
 use crate::canvas::viewport::Viewport;
-use crate::model::{Clipboard, MindmapTree, NodeId, NodeState, Selection};
 use crate::history::{History, PasteEntry};
 use crate::interaction::editing::EditingState;
+use crate::model::{Clipboard, MindmapTree, NodeId, NodeState, Selection};
 use egui::{Key, Rect, Response, Ui};
 
 /// Drag-and-drop state for reparenting nodes.
 pub struct DragState {
     pub node_id: NodeId,
     pub drop_target: Option<NodeId>,
-    pub grab_offset: egui::Vec2,  // cursor_pos - node_screen_center at drag start
-    pub cursor_pos: egui::Pos2,   // updated each frame
+    pub grab_offset: egui::Vec2, // cursor_pos - node_screen_center at drag start
+    pub cursor_pos: egui::Pos2,  // updated each frame
 }
 
 /// Result from handle_input so the caller knows what extra work to do.
@@ -49,21 +49,30 @@ pub fn handle_input(
     // --- Zoom (Scroll wheel zooms toward cursor, Ctrl+Scroll or plain scroll) ---
     let scroll_delta = ui.input(|i| i.smooth_scroll_delta.y);
     let raw_scroll = ui.input(|i| {
-        i.events.iter().find_map(|e| {
-            if let egui::Event::MouseWheel { delta, .. } = e {
-                Some(delta.y)
-            } else {
-                None
-            }
-        }).unwrap_or(0.0)
+        i.events
+            .iter()
+            .find_map(|e| {
+                if let egui::Event::MouseWheel { delta, .. } = e {
+                    Some(delta.y)
+                } else {
+                    None
+                }
+            })
+            .unwrap_or(0.0)
     });
-    let scroll = if scroll_delta != 0.0 { scroll_delta } else { raw_scroll * 50.0 };
+    let scroll = if scroll_delta != 0.0 {
+        scroll_delta
+    } else {
+        raw_scroll * 50.0
+    };
     let modifiers = ui.input(|i| i.modifiers);
 
     if scroll != 0.0 {
         if let Some(pointer) = ui.input(|i| i.pointer.hover_pos()) {
-            if pointer.x >= screen_rect.min.x && pointer.x <= screen_rect.max.x
-                && pointer.y >= screen_rect.min.y && pointer.y <= screen_rect.max.y
+            if pointer.x >= screen_rect.min.x
+                && pointer.x <= screen_rect.max.x
+                && pointer.y >= screen_rect.min.y
+                && pointer.y <= screen_rect.max.y
             {
                 viewport.zoom_around(pointer, scroll * 0.002, screen_rect);
             }
@@ -81,7 +90,8 @@ pub fn handle_input(
     } else if is_dragging_primary {
         // Left-drag: check if drag started on a node
         let drag_started_on_node_id = if response.drag_started_by(egui::PointerButton::Primary) {
-            response.interact_pointer_pos()
+            response
+                .interact_pointer_pos()
                 .and_then(|p| find_node_at(p, node_rects))
         } else {
             None
@@ -91,7 +101,8 @@ pub fn handle_input(
         if let Some(node_id) = drag_started_on_node_id {
             if node_id != tree.root && drag_state.is_none() {
                 let pointer_pos = response.interact_pointer_pos().unwrap_or(egui::Pos2::ZERO);
-                let node_screen_pos = viewport.canvas_to_screen(tree.nodes[node_id].layout_pos, screen_rect);
+                let node_screen_pos =
+                    viewport.canvas_to_screen(tree.nodes[node_id].layout_pos, screen_rect);
                 *drag_state = Some(DragState {
                     node_id,
                     drop_target: None,
@@ -242,7 +253,7 @@ pub fn handle_input(
                                 batch_actions.push(crate::history::Action::DeleteSubtree {
                                     subtree,
                                     parent_id: parent_id.unwrap_or(tree.root),
-                                    child_index,
+                                    _child_index: child_index,
                                 });
                             }
                         }
@@ -270,10 +281,8 @@ pub fn handle_input(
                             if first_root.is_none() {
                                 first_root = Some(new_root);
                             }
-                            let saved: Vec<_> = all_ids
-                                .iter()
-                                .map(|&id| tree.nodes[id].clone())
-                                .collect();
+                            let saved: Vec<_> =
+                                all_ids.iter().map(|&id| tree.nodes[id].clone()).collect();
                             entries.push(PasteEntry {
                                 new_root_id: new_root,
                                 parent_id,
@@ -340,9 +349,11 @@ pub fn handle_input(
                     if m.ctrl {
                         // Move sibling up
                         if let Some(node_id) = selection.primary() {
-                            if let Some((parent_id, old_idx, new_idx)) = tree.move_sibling_up(node_id) {
+                            if let Some((parent_id, old_idx, new_idx)) =
+                                tree.move_sibling_up(node_id)
+                            {
                                 history.push(crate::history::Action::MoveSibling {
-                                    node_id,
+                                    _node_id: node_id,
                                     parent_id,
                                     old_index: old_idx,
                                     new_index: new_idx,
@@ -368,9 +379,11 @@ pub fn handle_input(
                     if m.ctrl {
                         // Move sibling down
                         if let Some(node_id) = selection.primary() {
-                            if let Some((parent_id, old_idx, new_idx)) = tree.move_sibling_down(node_id) {
+                            if let Some((parent_id, old_idx, new_idx)) =
+                                tree.move_sibling_down(node_id)
+                            {
                                 history.push(crate::history::Action::MoveSibling {
-                                    node_id,
+                                    _node_id: node_id,
                                     parent_id,
                                     old_index: old_idx,
                                     new_index: new_idx,
@@ -471,7 +484,7 @@ pub fn handle_input(
                                 history.push(crate::history::Action::DeleteSubtree {
                                     subtree,
                                     parent_id: parent_id.unwrap_or(tree.root),
-                                    child_index,
+                                    _child_index: child_index,
                                 });
                                 // Select parent after deletion
                                 if let Some(pid) = parent_id {
@@ -524,7 +537,7 @@ pub fn handle_input(
                                     batch_actions.push(crate::history::Action::DeleteSubtree {
                                         subtree,
                                         parent_id: parent_id.unwrap_or(tree.root),
-                                        child_index,
+                                        _child_index: child_index,
                                     });
                                 }
                             }
@@ -555,10 +568,8 @@ pub fn handle_input(
                                     first_root = Some(new_root);
                                 }
                                 // Save the pasted nodes for redo
-                                let saved: Vec<_> = all_ids
-                                    .iter()
-                                    .map(|&id| tree.nodes[id].clone())
-                                    .collect();
+                                let saved: Vec<_> =
+                                    all_ids.iter().map(|&id| tree.nodes[id].clone()).collect();
                                 entries.push(PasteEntry {
                                     new_root_id: new_root,
                                     parent_id,

@@ -9,6 +9,10 @@ pub fn export_png(tree: &MindmapTree, color_config: &DepthColorConfig) -> Option
     let rtree = resvg::usvg::Tree::from_str(&svg_str, &opt, &fontdb).ok()?;
     let size = rtree.size();
     let mut pixmap = resvg::tiny_skia::Pixmap::new(size.width() as u32, size.height() as u32)?;
-    resvg::render(&rtree, resvg::tiny_skia::Transform::identity(), &mut pixmap.as_mut());
+    resvg::render(
+        &rtree,
+        resvg::tiny_skia::Transform::identity(),
+        &mut pixmap.as_mut(),
+    );
     pixmap.encode_png().ok()
 }

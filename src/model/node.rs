@@ -12,7 +12,6 @@ pub enum Side {
 pub enum NodeState {
     Default,
     Hovered,
-    Selected,
     Editing,
 }
 
@@ -82,18 +81,5 @@ impl MindmapNode {
             current = nodes[parent_id].parent;
         }
         depth
-    }
-
-    pub fn is_leaf(&self) -> bool {
-        self.children.is_empty()
-    }
-
-    /// Count all descendants (recursive)
-    pub fn descendant_count(&self, nodes: &[MindmapNode]) -> usize {
-        let mut count = 0;
-        for &child_id in &self.children {
-            count += 1 + nodes[child_id].descendant_count(nodes);
-        }
-        count
     }
 }

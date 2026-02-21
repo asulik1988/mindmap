@@ -1,2 +1,12 @@
 /target/
 *.pdb
+/.claude/
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.env

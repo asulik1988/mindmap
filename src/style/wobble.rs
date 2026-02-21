@@ -132,8 +132,16 @@ fn _line(
     if do_move {
         if overlay {
             ops.push(Op::Move(
-                x1 + if o.preserve_vertices { 0.0 } else { random_half(rng) },
-                y1 + if o.preserve_vertices { 0.0 } else { random_half(rng) },
+                x1 + if o.preserve_vertices {
+                    0.0
+                } else {
+                    random_half(rng)
+                },
+                y1 + if o.preserve_vertices {
+                    0.0
+                } else {
+                    random_half(rng)
+                },
             ));
         } else {
             ops.push(Op::Move(
@@ -157,8 +165,16 @@ fn _line(
             mid_disp_y + y1 + (y2 - y1) * diverge_point + random_half(rng),
             mid_disp_x + x1 + 2.0 * (x2 - x1) * diverge_point + random_half(rng),
             mid_disp_y + y1 + 2.0 * (y2 - y1) * diverge_point + random_half(rng),
-            x2 + if o.preserve_vertices { 0.0 } else { random_half(rng) },
-            y2 + if o.preserve_vertices { 0.0 } else { random_half(rng) },
+            x2 + if o.preserve_vertices {
+                0.0
+            } else {
+                random_half(rng)
+            },
+            y2 + if o.preserve_vertices {
+                0.0
+            } else {
+                random_half(rng)
+            },
         ));
     } else {
         ops.push(Op::BcurveTo(
@@ -166,8 +182,16 @@ fn _line(
             mid_disp_y + y1 + (y2 - y1) * diverge_point + random_full(rng),
             mid_disp_x + x1 + 2.0 * (x2 - x1) * diverge_point + random_full(rng),
             mid_disp_y + y1 + 2.0 * (y2 - y1) * diverge_point + random_full(rng),
-            x2 + if o.preserve_vertices { 0.0 } else { random_full(rng) },
-            y2 + if o.preserve_vertices { 0.0 } else { random_full(rng) },
+            x2 + if o.preserve_vertices {
+                0.0
+            } else {
+                random_full(rng)
+            },
+            y2 + if o.preserve_vertices {
+                0.0
+            } else {
+                random_full(rng)
+            },
         ));
     }
 
@@ -175,14 +199,7 @@ fn _line(
 }
 
 /// `_doubleLine()` from renderer.ts — primary stroke + optional overlay.
-fn _double_line(
-    x1: f32,
-    y1: f32,
-    x2: f32,
-    y2: f32,
-    rng: &mut Rng,
-    o: &RoughOptions,
-) -> Vec<Op> {
+fn _double_line(x1: f32, y1: f32, x2: f32, y2: f32, rng: &mut Rng, o: &RoughOptions) -> Vec<Op> {
     let o1 = _line(x1, y1, x2, y2, rng, o, true, false);
     if o.disable_multi_stroke {
         return o1;
@@ -419,14 +436,7 @@ fn rounded_rect_segments(rect: Rect, rounding: f32) -> Vec<PathSeg> {
 }
 
 /// Convert quadratic bezier (from, Q_cp, to) into a cubic PathSeg.
-fn quad_to_cubic(
-    from_x: f32,
-    from_y: f32,
-    cpx: f32,
-    cpy: f32,
-    to_x: f32,
-    to_y: f32,
-) -> PathSeg {
+fn quad_to_cubic(from_x: f32, from_y: f32, cpx: f32, cpy: f32, to_x: f32, to_y: f32) -> PathSeg {
     let cp1x = from_x + 2.0 / 3.0 * (cpx - from_x);
     let cp1y = from_y + 2.0 / 3.0 * (cpy - from_y);
     let cp2x = to_x + 2.0 / 3.0 * (cpx - to_x);
@@ -549,12 +559,7 @@ fn ops_to_paths(ops: &[Op]) -> Vec<Vec<Pos2>> {
 /// Generate a roughjs-style hand-drawn line between two points.
 ///
 /// Returns multiple paths (polylines) suitable for `PathShape::line`.
-pub fn rough_line(
-    from: Pos2,
-    to: Pos2,
-    seed: u32,
-    options: &RoughOptions,
-) -> Vec<Vec<Pos2>> {
+pub fn rough_line(from: Pos2, to: Pos2, seed: u32, options: &RoughOptions) -> Vec<Vec<Pos2>> {
     let mut rng = Rng::new(seed);
     let ops = _double_line(from.x, from.y, to.x, to.y, &mut rng, options);
     ops_to_paths(&ops)
@@ -676,11 +681,17 @@ pub fn hachure_fill_rect(
     let rot = (angle_degrees + 90.0).to_radians();
 
     // Rotate corners
-    let rotated: Vec<(f32, f32)> = corners.iter().map(|&(x, y)| rotate_point(x, y, rot)).collect();
+    let rotated: Vec<(f32, f32)> = corners
+        .iter()
+        .map(|&(x, y)| rotate_point(x, y, rot))
+        .collect();
 
     // Find bounding box of rotated polygon
     let ymin = rotated.iter().map(|p| p.1).fold(f32::INFINITY, f32::min);
-    let ymax = rotated.iter().map(|p| p.1).fold(f32::NEG_INFINITY, f32::max);
+    let ymax = rotated
+        .iter()
+        .map(|p| p.1)
+        .fold(f32::NEG_INFINITY, f32::max);
 
     // Build edge table from rotated polygon (4 edges, closing the loop)
     struct Edge {
@@ -703,7 +714,12 @@ pub fn hachure_fill_rect(
             (p2.1, p1.1, p2.0)
         };
         let islope = (p2.0 - p1.0) / (p2.1 - p1.1);
-        edges.push(Edge { ymin: ymin_e, ymax: ymax_e, x_at_ymin, islope });
+        edges.push(Edge {
+            ymin: ymin_e,
+            ymax: ymax_e,
+            x_at_ymin,
+            islope,
+        });
     }
     edges.sort_by(|a, b| a.ymin.partial_cmp(&b.ymin).unwrap());
 
@@ -763,18 +779,4 @@ pub fn hachure_fill_rect(
     }
 
     ops_to_paths(&all_ops)
-}
-
-/// Generate cross-hatch fill (two passes at 90° apart).
-pub fn cross_hatch_fill_rect(
-    rect: Rect,
-    angle_degrees: f32,
-    gap: f32,
-    seed: u32,
-    options: &RoughOptions,
-) -> Vec<Vec<Pos2>> {
-    let mut paths = hachure_fill_rect(rect, angle_degrees, gap, seed, options);
-    let paths2 = hachure_fill_rect(rect, angle_degrees + 90.0, gap, seed.wrapping_add(9999), options);
-    paths.extend(paths2);
-    paths
 }
