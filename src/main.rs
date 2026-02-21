@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod app;
 mod canvas;
 mod export;
@@ -7,6 +9,7 @@ mod io;
 mod layout;
 mod model;
 mod style;
+mod ui;
 
 use eframe::egui;
 
