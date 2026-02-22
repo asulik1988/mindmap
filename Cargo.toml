@@ -23,6 +23,16 @@ resvg = "0.40"
 [build-dependencies]
 winresource = "0.1"
 
+[package.metadata.deb]
+maintainer = "Adam Sulik"
+section = "utils"
+depends = "$auto"
+assets = [
+    ["target/release/mindmap", "usr/bin/", "755"],
+    ["linux/mindmap.desktop", "usr/share/applications/", "644"],
+    ["assets/mindmap.png", "usr/share/icons/hicolor/256x256/apps/", "644"],
+]
+
 [profile.release]
 opt-level = 3
 lto = "thin"

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mindmap
+Comment=A hand-drawn mind mapping tool for FreeMind .mm files
+Exec=mindmap %f
+Icon=mindmap
+Terminal=false
+Type=Application
+Categories=Office;ProjectManagement;
+MimeType=application/x-freemind;
