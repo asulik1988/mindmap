@@ -1,11 +1,66 @@
-use super::spacing::{LEVEL_GAP, SIBLING_GAP, SUBTREE_GAP};
+use super::spacing::{level_gap, node_height_scale, sibling_gap, subtree_gap};
 use crate::model::{MindmapTree, NodeId, Side};
 use egui::Pos2;
 
+/// Precompute subtree heights for all nodes in a single O(n) bottom-up pass.
+/// Node heights are scaled by depth/zoom to create canopy-shaped compression.
+/// Returns (heights, depths) vecs indexed by NodeId.
+fn compute_all_subtree_heights(tree: &MindmapTree, zoom: f32) -> (Vec<f32>, Vec<usize>) {
+    let n = tree.nodes.len();
+    let mut heights = vec![0.0_f32; n];
+    let mut depths = vec![0usize; n];
+
+    // Iterative post-order DFS using a stack of (NodeId, children_processed).
+    let mut stack: Vec<(NodeId, bool)> = Vec::with_capacity(n);
+    stack.push((tree.root, false));
+
+    while let Some((id, processed)) = stack.pop() {
+        if processed {
+            // All children done — compute this node's height from cached children.
+            let node = &tree.nodes[id];
+            let depth = depths[id];
+            let scale = node_height_scale(depth, zoom);
+            let node_height = node.layout_size.y * scale;
+
+            if node.folded || node.children.is_empty() {
+                heights[id] = node_height;
+            } else {
+                let gap = sibling_gap(depth, zoom);
+                let children_height: f32 = node
+                    .children
+                    .iter()
+                    .map(|&c| heights[c])
+                    .sum::<f32>()
+                    + gap * (node.children.len() as f32 - 1.0).max(0.0);
+                heights[id] = children_height.max(node_height);
+            }
+        } else {
+            // First visit — re-push as processed, then push children.
+            stack.push((id, true));
+            let node = &tree.nodes[id];
+            if !node.folded {
+                let child_depth = depths[id] + 1;
+                for &child_id in node.children.iter().rev() {
+                    depths[child_id] = child_depth;
+                    stack.push((child_id, false));
+                }
+            }
+        }
+    }
+
+    (heights, depths)
+}
+
 /// Run the layout algorithm, assigning `layout_pos` to all visible nodes.
-pub fn layout(tree: &mut MindmapTree) {
+/// `zoom` controls gap decay: lower zoom → more aggressive compression at depth.
+pub fn layout(tree: &mut MindmapTree, zoom: f32) {
+    // Precompute all subtree heights in O(n)
+    let (heights, depths) = compute_all_subtree_heights(tree, zoom);
+
     // Root at origin
     tree.nodes[tree.root].layout_pos = Pos2::ZERO;
+    tree.nodes[tree.root].cached_depth = 0;
+    tree.nodes[tree.root].cached_side = None;
 
     // Split root's children into left and right groups
     let root_children: Vec<NodeId> = tree.nodes[tree.root].children.clone();
@@ -28,27 +83,34 @@ pub fn layout(tree: &mut MindmapTree) {
         }
     }
 
+    let st_gap = subtree_gap(zoom);
+
     // Layout right side (positive X)
-    layout_side(tree, &right_children, 1.0);
+    layout_side(tree, &heights, &depths, &right_children, 1.0, Side::Right, zoom, st_gap);
 
     // Layout left side (negative X)
-    layout_side(tree, &left_children, -1.0);
+    layout_side(tree, &heights, &depths, &left_children, -1.0, Side::Left, zoom, st_gap);
 }
 
-fn layout_side(tree: &mut MindmapTree, children: &[NodeId], x_direction: f32) {
+fn layout_side(
+    tree: &mut MindmapTree,
+    heights: &[f32],
+    depths: &[usize],
+    children: &[NodeId],
+    x_direction: f32,
+    side: Side,
+    zoom: f32,
+    st_gap: f32,
+) {
     if children.is_empty() {
         return;
     }
 
-    // First pass: compute subtree heights
-    let mut subtree_heights: Vec<f32> = Vec::new();
-    for &child_id in children {
-        let h = compute_subtree_height(tree, child_id);
-        subtree_heights.push(h);
-    }
+    // First pass: look up precomputed subtree heights
+    let subtree_heights: Vec<f32> = children.iter().map(|&id| heights[id]).collect();
 
     let total_height: f32 =
-        subtree_heights.iter().sum::<f32>() + SUBTREE_GAP * (children.len() as f32 - 1.0).max(0.0);
+        subtree_heights.iter().sum::<f32>() + st_gap * (children.len() as f32 - 1.0).max(0.0);
 
     // Position children vertically, centered around y=0
     let mut current_y = -total_height / 2.0;
@@ -59,26 +121,36 @@ fn layout_side(tree: &mut MindmapTree, children: &[NodeId], x_direction: f32) {
 
         layout_subtree(
             tree,
+            heights,
+            depths,
             child_id,
-            LEVEL_GAP * x_direction,
+            level_gap(0, zoom) * x_direction,
             center_y,
             1,
             x_direction,
+            &side,
+            zoom,
         );
 
-        current_y += subtree_h + SUBTREE_GAP;
+        current_y += subtree_h + st_gap;
     }
 }
 
 fn layout_subtree(
     tree: &mut MindmapTree,
+    heights: &[f32],
+    depths: &[usize],
     node_id: NodeId,
     x: f32,
     y: f32,
-    _depth: usize,
+    depth: usize,
     x_direction: f32,
+    side: &Side,
+    zoom: f32,
 ) {
     tree.nodes[node_id].layout_pos = Pos2::new(x, y);
+    tree.nodes[node_id].cached_depth = depth;
+    tree.nodes[node_id].cached_side = Some(side.clone());
 
     // If folded, don't layout children
     if tree.nodes[node_id].folded {
@@ -90,43 +162,22 @@ fn layout_subtree(
         return;
     }
 
-    // Compute subtree heights for each child
-    let mut subtree_heights: Vec<f32> = Vec::new();
-    for &child_id in &children {
-        subtree_heights.push(compute_subtree_height(tree, child_id));
-    }
+    // Look up precomputed subtree heights
+    let subtree_heights: Vec<f32> = children.iter().map(|&id| heights[id]).collect();
 
+    let gap = sibling_gap(depth, zoom);
     let total_height: f32 =
-        subtree_heights.iter().sum::<f32>() + SIBLING_GAP * (children.len() as f32 - 1.0).max(0.0);
+        subtree_heights.iter().sum::<f32>() + gap * (children.len() as f32 - 1.0).max(0.0);
 
-    let child_x = x + LEVEL_GAP * x_direction;
+    let child_x = x + level_gap(depth, zoom) * x_direction;
     let mut current_y = y - total_height / 2.0;
 
     for (i, &child_id) in children.iter().enumerate() {
         let subtree_h = subtree_heights[i];
         let center_y = current_y + subtree_h / 2.0;
 
-        layout_subtree(tree, child_id, child_x, center_y, _depth + 1, x_direction);
+        layout_subtree(tree, heights, depths, child_id, child_x, center_y, depth + 1, x_direction, side, zoom);
 
-        current_y += subtree_h + SIBLING_GAP;
+        current_y += subtree_h + gap;
     }
-}
-
-/// Compute the total height a subtree occupies (for spacing).
-fn compute_subtree_height(tree: &MindmapTree, node_id: NodeId) -> f32 {
-    let node = &tree.nodes[node_id];
-    let node_height = node.layout_size.y; // use measured size
-
-    if node.folded || node.children.is_empty() {
-        return node_height;
-    }
-
-    let children_height: f32 = node
-        .children
-        .iter()
-        .map(|&c| compute_subtree_height(tree, c))
-        .sum::<f32>()
-        + SIBLING_GAP * (node.children.len() as f32 - 1.0).max(0.0);
-
-    children_height.max(node_height)
 }

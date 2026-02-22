@@ -18,6 +18,7 @@ use crate::ui::toolbar;
 use eframe::egui;
 use std::collections::HashSet;
 use std::path::PathBuf;
+use std::time::Instant;
 
 pub struct MindmapApp {
     tree: Option<MindmapTree>,
@@ -48,6 +49,7 @@ pub struct MindmapApp {
     minimap_dragging: bool,
     link_edit: Option<(NodeId, String)>,
     link_edit_suppress_close: bool,
+    last_layout_zoom: f32,
 }
 
 // ---------------------------------------------------------------------------
@@ -55,15 +57,36 @@ pub struct MindmapApp {
 // ---------------------------------------------------------------------------
 
 /// Measure all node sizes and recompute the tree layout.
-fn measure_and_relayout(tree: &mut MindmapTree, painter: &egui::Painter) {
+fn measure_and_relayout(tree: &mut MindmapTree, painter: &egui::Painter, zoom: f32) {
+    let t0 = Instant::now();
     node_renderer::measure_all_nodes(tree, painter);
-    reingold_tilford::layout(tree);
+    let measure_ms = t0.elapsed().as_millis();
+
+    let t1 = Instant::now();
+    reingold_tilford::layout(tree, zoom);
+    let layout_ms = t1.elapsed().as_millis();
+
+    log::info!(
+        "measure_and_relayout: measure={}ms, layout={}ms, total={}ms ({} nodes)",
+        measure_ms,
+        layout_ms,
+        t0.elapsed().as_millis(),
+        tree.nodes.len(),
+    );
+}
+
+/// Recompute layout positions only (skip text measurement).
+/// Used for zoom-triggered relayout where node sizes haven't changed.
+fn relayout_only(tree: &mut MindmapTree, zoom: f32) {
+    let t0 = Instant::now();
+    reingold_tilford::layout(tree, zoom);
+    log::info!("relayout_only: {}ms ({} nodes)", t0.elapsed().as_millis(), tree.nodes.len());
 }
 
 /// Unfold the path to `nid` and relayout if anything changed.
-fn unfold_and_relayout(tree: &mut MindmapTree, nid: NodeId, painter: &egui::Painter) {
+fn unfold_and_relayout(tree: &mut MindmapTree, nid: NodeId, painter: &egui::Painter, zoom: f32) {
     if tree.unfold_path_to(nid) {
-        measure_and_relayout(tree, painter);
+        measure_and_relayout(tree, painter, zoom);
     }
 }
 
@@ -325,7 +348,7 @@ fn handle_context_action(
     }
 
     if needs_relayout {
-        measure_and_relayout(tree, ui.painter());
+        measure_and_relayout(tree, ui.painter(), viewport.zoom);
     }
     if let Some(vis_id) = ensure_visible {
         search_viewport::ensure_node_visible(vis_id, viewport, screen_rect, tree);
@@ -357,20 +380,20 @@ fn handle_search_bar(
         SearchBarAction::Next => {
             search.next();
             if let Some(nid) = search.current_match() {
-                unfold_and_relayout(tree, nid, ui.painter());
+                unfold_and_relayout(tree, nid, ui.painter(), viewport.zoom);
                 search_viewport::ensure_node_visible(nid, viewport, screen_rect, tree);
             }
         }
         SearchBarAction::Prev => {
             search.prev();
             if let Some(nid) = search.current_match() {
-                unfold_and_relayout(tree, nid, ui.painter());
+                unfold_and_relayout(tree, nid, ui.painter(), viewport.zoom);
                 search_viewport::ensure_node_visible(nid, viewport, screen_rect, tree);
             }
         }
         SearchBarAction::ZoomTo => {
             if let Some(nid) = search.current_match() {
-                unfold_and_relayout(tree, nid, ui.painter());
+                unfold_and_relayout(tree, nid, ui.painter(), viewport.zoom);
                 zoom_to_node(viewport, nid, tree, screen_rect);
                 selection.select_single(nid);
                 search.close();
@@ -387,7 +410,7 @@ fn handle_search_bar(
                         old_text,
                         new_text,
                     });
-                    measure_and_relayout(tree, ui.painter());
+                    measure_and_relayout(tree, ui.painter(), viewport.zoom);
                 }
                 search.update_matches_force(tree);
                 search.next();
@@ -410,7 +433,7 @@ fn handle_search_bar(
             }
             if !batch.is_empty() {
                 history.push(crate::history::Action::Batch(batch));
-                measure_and_relayout(tree, ui.painter());
+                measure_and_relayout(tree, ui.painter(), viewport.zoom);
             }
             search.update_matches_force(tree);
         }
@@ -418,7 +441,7 @@ fn handle_search_bar(
 
     // Auto-scroll to current match when query changes
     if let Some(nid) = search.current_match() {
-        unfold_and_relayout(tree, nid, ui.painter());
+        unfold_and_relayout(tree, nid, ui.painter(), viewport.zoom);
     }
 
     // If user clicked a node that is a search match, jump to it
@@ -488,6 +511,7 @@ impl MindmapApp {
             minimap_dragging: false,
             link_edit: None,
             link_edit_suppress_close: false,
+            last_layout_zoom: 1.0,
         };
 
         if let Some(path) = file_arg {
@@ -515,7 +539,14 @@ impl MindmapApp {
     fn load_file(&mut self, path: PathBuf) {
         match crate::io::freemind_read::load_mm_file(&path) {
             Ok(mut tree) => {
-                reingold_tilford::layout(&mut tree);
+                // Auto-fold large files so the initial view is navigable
+                let total = tree.nodes.len();
+                if total > 200 {
+                    tree.auto_fold_for_display(200);
+                    log::info!("Auto-folded large file ({} nodes) for initial display", total);
+                }
+                // Skip layout here — measure_and_relayout() on the first frame
+                // will measure node sizes and compute layout in one pass.
                 self.tree = Some(tree);
                 self.add_recent_file(&path);
                 self.file_path = Some(path);
@@ -783,9 +814,17 @@ impl eframe::App for MindmapApp {
                 // Fit to bounds on first frame after loading
                 if self.needs_initial_fit {
                     if let Some(ref mut tree) = self.tree {
-                        measure_and_relayout(tree, ui.painter());
+                        let t_fit = Instant::now();
+                        // First pass: measure text + layout at current zoom to get bounds
+                        measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                         let bounds = search_viewport::compute_tree_bounds(tree);
                         self.viewport.fit_to_bounds(bounds, screen_rect, 80.0);
+                        // Second pass: relayout with the fitted zoom for correct gap decay
+                        relayout_only(tree, self.viewport.zoom);
+                        let bounds = search_viewport::compute_tree_bounds(tree);
+                        self.viewport.fit_to_bounds(bounds, screen_rect, 80.0);
+                        self.last_layout_zoom = self.viewport.zoom;
+                        log::info!("initial_fit total: {}ms", t_fit.elapsed().as_millis());
                     }
                     self.needs_initial_fit = false;
                 }
@@ -806,6 +845,7 @@ impl eframe::App for MindmapApp {
                     let search_current = self.search.current_match();
 
                     // Render canvas
+                    let t_draw = Instant::now();
                     self.node_rects = renderer::draw_canvas(
                         painter,
                         tree,
@@ -818,6 +858,10 @@ impl eframe::App for MindmapApp {
                         search_current,
                         self.dark_mode,
                     );
+                    let draw_ms = t_draw.elapsed().as_millis();
+                    if draw_ms > 50 {
+                        log::info!("draw_canvas: {}ms", draw_ms);
+                    }
 
                     // --- Right-click to open context menu ---
                     let secondary_clicked = ui.input(|i| i.pointer.secondary_clicked());
@@ -956,8 +1000,16 @@ impl eframe::App for MindmapApp {
                             }
                         }
 
+                        // Check if zoom changed enough to warrant relayout
+                        let zoom_changed = (self.viewport.zoom - self.last_layout_zoom).abs()
+                            > self.last_layout_zoom * 0.01;
+
                         if needs_relayout {
-                            measure_and_relayout(tree, ui.painter());
+                            measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
+                            self.last_layout_zoom = self.viewport.zoom;
+                        } else if zoom_changed {
+                            relayout_only(tree, self.viewport.zoom);
+                            self.last_layout_zoom = self.viewport.zoom;
                         }
 
                         if let Some(vis_id) = ensure_visible {
@@ -1578,13 +1630,13 @@ impl eframe::App for MindmapApp {
                         MenuAction::Undo => {
                             self.menu_open = false;
                             if self.history.undo(tree) {
-                                measure_and_relayout(tree, ui.painter());
+                                measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                             }
                         }
                         MenuAction::Redo => {
                             self.menu_open = false;
                             if self.history.redo(tree) {
-                                measure_and_relayout(tree, ui.painter());
+                                measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                             }
                         }
                         MenuAction::CloseToWelcome => {

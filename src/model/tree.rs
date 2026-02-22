@@ -37,6 +37,7 @@ impl MindmapTree {
         id
     }
 
+    #[cfg(test)]
     pub fn depth(&self, node_id: NodeId) -> usize {
         self.nodes[node_id].depth(&self.nodes)
     }
@@ -57,20 +58,21 @@ impl MindmapTree {
     }
 
     /// Get all visible node IDs (skipping children of folded nodes).
+    /// Uses iterative DFS to avoid cloning children vecs.
     pub fn visible_nodes(&self) -> Vec<NodeId> {
         let mut result = Vec::new();
-        self.collect_visible(self.root, &mut result);
-        result
-    }
-
-    fn collect_visible(&self, node_id: NodeId, result: &mut Vec<NodeId>) {
-        result.push(node_id);
-        let node = &self.nodes[node_id];
-        if !node.folded {
-            for &child_id in &node.children.clone() {
-                self.collect_visible(child_id, result);
+        let mut stack = vec![self.root];
+        while let Some(id) = stack.pop() {
+            result.push(id);
+            let node = &self.nodes[id];
+            if !node.folded {
+                // Push in reverse to preserve left-to-right DFS order
+                for &child_id in node.children.iter().rev() {
+                    stack.push(child_id);
+                }
             }
         }
+        result
     }
 
     /// Add a child node to the given parent. Returns the new node's ID.
@@ -171,16 +173,63 @@ impl MindmapTree {
         Some(subtree)
     }
 
-    fn collect_subtree(&self, node_id: NodeId, result: &mut Vec<NodeId>) {
-        result.push(node_id);
-        for &child_id in &self.nodes[node_id].children {
-            self.collect_subtree(child_id, result);
+    fn collect_subtree(&self, root: NodeId, result: &mut Vec<NodeId>) {
+        let mut stack = vec![root];
+        while let Some(id) = stack.pop() {
+            result.push(id);
+            for &child_id in self.nodes[id].children.iter().rev() {
+                stack.push(child_id);
+            }
         }
     }
 
     pub fn toggle_fold(&mut self, node_id: NodeId) {
         if !self.nodes[node_id].children.is_empty() {
             self.nodes[node_id].folded = !self.nodes[node_id].folded;
+        }
+    }
+
+    /// Progressively fold nodes from the deepest foldable level upward until
+    /// the visible node count is at or below `max_visible`. Used on load to
+    /// keep large files navigable. Already-folded nodes are left as-is.
+    pub fn auto_fold_for_display(&mut self, max_visible: usize) {
+        loop {
+            // DFS to count visible nodes and find the deepest foldable level
+            let mut visible_count = 0usize;
+            let mut max_foldable_depth = 0usize;
+            let mut stack: Vec<(NodeId, usize)> = vec![(self.root, 0)];
+            let mut foldable_at_depth: Vec<NodeId> = Vec::new();
+
+            while let Some((id, depth)) = stack.pop() {
+                visible_count += 1;
+                let node = &self.nodes[id];
+                if !node.folded {
+                    for &child_id in &node.children {
+                        stack.push((child_id, depth + 1));
+                    }
+                }
+                // Track the deepest depth with foldable (non-leaf, unfolded) nodes
+                if !node.children.is_empty() && !node.folded {
+                    if depth > max_foldable_depth {
+                        max_foldable_depth = depth;
+                        foldable_at_depth.clear();
+                    }
+                    if depth == max_foldable_depth {
+                        foldable_at_depth.push(id);
+                    }
+                }
+            }
+
+            if visible_count <= max_visible || max_foldable_depth <= 1 {
+                break;
+            }
+
+            if foldable_at_depth.is_empty() {
+                break;
+            }
+            for id in &foldable_at_depth {
+                self.nodes[*id].folded = true;
+            }
         }
     }
 
@@ -381,13 +430,16 @@ impl MindmapTree {
         result
     }
 
-    fn collect_dfs(&self, node_id: NodeId, result: &mut Vec<NodeId>) {
-        if self.nodes[node_id].text.is_empty() {
-            return; // skip deleted nodes
-        }
-        result.push(node_id);
-        for &child_id in &self.nodes[node_id].children {
-            self.collect_dfs(child_id, result);
+    fn collect_dfs(&self, root: NodeId, result: &mut Vec<NodeId>) {
+        let mut stack = vec![root];
+        while let Some(id) = stack.pop() {
+            if self.nodes[id].text.is_empty() {
+                continue; // skip deleted nodes
+            }
+            result.push(id);
+            for &child_id in self.nodes[id].children.iter().rev() {
+                stack.push(child_id);
+            }
         }
     }
 
