@@ -61,7 +61,10 @@ On Windows:
 .\target\release\mindmap.exe path\to\file.mm
 ```
 
-**macOS note:** The DMG release is not code-signed. On first launch, right-click the app and select "Open" to bypass Gatekeeper.
+**macOS note:** The DMG release is not code-signed. On first launch, macOS will block it. To open it:
+1. Click "Done" on the dialog that says the app can't be verified
+2. Go to **System Settings → Privacy & Security**
+3. Scroll down to find "Mindmap was blocked to protect your Mac" and click **Open Anyway**
 
 ---
 
