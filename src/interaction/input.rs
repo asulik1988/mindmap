@@ -79,6 +79,20 @@ pub fn handle_input(
         }
     }
 
+    // --- Pinch-to-zoom (macOS trackpad) ---
+    let pinch_delta = ui.input(|i| i.zoom_delta());
+    if pinch_delta != 1.0 {
+        if let Some(pointer) = ui.input(|i| i.pointer.hover_pos()) {
+            if pointer.x >= screen_rect.min.x
+                && pointer.x <= screen_rect.max.x
+                && pointer.y >= screen_rect.min.y
+                && pointer.y <= screen_rect.max.y
+            {
+                viewport.zoom_around(pointer, pinch_delta - 1.0, screen_rect);
+            }
+        }
+    }
+
     // --- Pan (left-drag on empty canvas, middle-mouse drag, or Space+drag) ---
     let space_held = ui.input(|i| i.key_down(Key::Space));
     let is_dragging_primary = response.dragged_by(egui::PointerButton::Primary);
