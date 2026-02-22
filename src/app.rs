@@ -1676,14 +1676,36 @@ fn load_recent_files() -> Vec<PathBuf> {
     let Some(path) = recent_files_path() else {
         return Vec::new();
     };
-    let Ok(content) = std::fs::read_to_string(&path) else {
+
+    // If recent_files.txt exists, load normally
+    if let Ok(content) = std::fs::read_to_string(&path) {
+        return content
+            .lines()
+            .filter(|s| !s.is_empty())
+            .map(PathBuf::from)
+            .collect();
+    }
+
+    // First launch — seed example file
+    seed_example_file(&path)
+}
+
+fn seed_example_file(recent_path: &std::path::Path) -> Vec<PathBuf> {
+    let Some(parent) = recent_path.parent() else {
         return Vec::new();
     };
-    content
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(PathBuf::from)
-        .collect()
+    let examples_dir = parent.join("examples");
+    let _ = std::fs::create_dir_all(&examples_dir);
+
+    let example_path = examples_dir.join("whats-for-dinner.mm");
+    let content = include_str!("../examples/whats-for-dinner.mm");
+    if std::fs::write(&example_path, content).is_ok() {
+        let recent = vec![example_path];
+        save_recent_files(&recent);
+        recent
+    } else {
+        Vec::new()
+    }
 }
 
 fn save_recent_files(recent: &[PathBuf]) {
