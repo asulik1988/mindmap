@@ -36,8 +36,13 @@ A hand-drawn mind mapping tool for FreeMind `.mm` files, built with Rust and egu
 
 **Prerequisites:** Rust toolchain ([rustup.rs](https://rustup.rs))
 
+**Linux (Ubuntu/Debian):** Install system dependencies first:
 ```bash
-git clone <repo>
+sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgtk-3-dev
+```
+
+```bash
+git clone https://github.com/asulik1988/mindmap.git
 cd mindmap
 cargo build --release
 ```
@@ -55,6 +60,8 @@ On Windows:
 ```powershell
 .\target\release\mindmap.exe path\to\file.mm
 ```
+
+**macOS note:** The DMG release is not code-signed. On first launch, right-click the app and select "Open" to bypass Gatekeeper.
 
 ---
 

@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
 
@@ -44,7 +44,7 @@ jobs:
           path: target/installer/mindmap-${{ steps.version.outputs.version }}-setup.exe
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
@@ -105,11 +105,20 @@ jobs:
           path: mindmap-${{ steps.version.outputs.version }}-macos-universal.dmg
 
   release:
-    if: github.ref_type == 'tag' && contains(github.event.base_ref, 'refs/heads/master') || github.ref_type == 'tag' && github.event.base_ref == ''
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     needs: [build-windows, build-macos]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verify tag matches Cargo.toml version
+        run: |
+          CARGO_VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$CARGO_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match Cargo.toml version $CARGO_VERSION"
+            exit 1
+          fi
 
       - name: Verify tag is on master
         run: |

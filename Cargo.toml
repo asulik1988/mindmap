@@ -4,6 +4,9 @@ version = "0.1.2"
 edition = "2021"
 description = "A hand-drawn mind mapping tool for FreeMind .mm files"
 readme = "README.md"
+license = "MIT"
+repository = "https://github.com/asulik1988/mindmap"
+authors = ["Adam Sulik"]
 
 [dependencies]
 eframe = "0.31"

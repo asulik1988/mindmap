@@ -14,7 +14,11 @@ Thanks for your interest in contributing! Here's how to get started.
    ```bash
    git checkout -b my-feature
    ```
-4. Make sure it builds:
+4. **Linux (Ubuntu/Debian):** Install system dependencies:
+   ```bash
+   sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgtk-3-dev
+   ```
+5. Make sure it builds:
    ```bash
    cargo build
    ```
