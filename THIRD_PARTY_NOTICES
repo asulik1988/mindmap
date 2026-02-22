@@ -1,4 +1,22 @@
-This project incorporates code and algorithms from the following open source projects:
+This project incorporates code, algorithms, and libraries from the following
+open source projects:
+
+--------------------------------------------------------------------------------
+
+egui / eframe — https://github.com/emilk/egui
+Copyright (c) 2018-2021 Emil Ernerfeldt
+
+Licensed under either of:
+  - Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+  - MIT License (http://opensource.org/licenses/MIT)
+
+at your option.
+
+egui is the immediate-mode GUI framework used to build this application.
+The egui crate bundles default fonts (via epaint_default_fonts) which are
+licensed under the SIL Open Font License 1.1 and Ubuntu Font Licence 1.0.
+
+Used as: core GUI framework (unmodified library dependency)
 
 --------------------------------------------------------------------------------
 
