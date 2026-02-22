@@ -128,3 +128,68 @@ fn xml_escape(s: &str) -> String {
         .replace('"', "&quot;")
         .replace('\'', "&apos;")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::io::freemind_read::parse_mm_xml;
+
+    #[test]
+    fn round_trip_preserves_structure() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="Root" ID="ID_1">
+                <node TEXT="Child1" ID="ID_2" POSITION="right"/>
+                <node TEXT="Child2" ID="ID_3" POSITION="left">
+                    <node TEXT="Grandchild" ID="ID_4"/>
+                </node>
+            </node>
+        </map>"#;
+        let tree1 = parse_mm_xml(xml).unwrap();
+        let serialized = serialize_tree(&tree1).unwrap();
+        let tree2 = parse_mm_xml(&serialized).unwrap();
+        // Same structure
+        assert_eq!(tree2.nodes[tree2.root].text, "Root");
+        assert_eq!(tree2.nodes[tree2.root].children.len(), 2);
+        let c1 = tree2.nodes[tree2.root].children[0];
+        let c2 = tree2.nodes[tree2.root].children[1];
+        assert_eq!(tree2.nodes[c1].text, "Child1");
+        assert_eq!(tree2.nodes[c2].text, "Child2");
+        assert_eq!(tree2.nodes[c2].children.len(), 1);
+        let gc = tree2.nodes[c2].children[0];
+        assert_eq!(tree2.nodes[gc].text, "Grandchild");
+    }
+
+    #[test]
+    fn round_trip_preserves_xml_escaping() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="A &amp; B &lt; C &gt; D &quot;E&quot;" ID="ID_1"/>
+        </map>"#;
+        let tree1 = parse_mm_xml(xml).unwrap();
+        assert_eq!(tree1.nodes[tree1.root].text, "A & B < C > D \"E\"");
+        let serialized = serialize_tree(&tree1).unwrap();
+        let tree2 = parse_mm_xml(&serialized).unwrap();
+        assert_eq!(tree2.nodes[tree2.root].text, "A & B < C > D \"E\"");
+    }
+
+    #[test]
+    fn round_trip_preserves_attributes() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="Root" ID="ID_1" FOLDED="true" LINK="https://example.com">
+                <font BOLD="true" SIZE="18"/>
+                <richcontent TYPE="NOTE"><html><head></head><body>
+                    <p>A note</p>
+                </body></html></richcontent>
+                <node TEXT="Child" ID="ID_2" POSITION="right"/>
+            </node>
+        </map>"#;
+        let tree1 = parse_mm_xml(xml).unwrap();
+        let serialized = serialize_tree(&tree1).unwrap();
+        let tree2 = parse_mm_xml(&serialized).unwrap();
+        let root = &tree2.nodes[tree2.root];
+        assert!(root.folded);
+        assert!(root.bold);
+        assert_eq!(root.font_size, Some(18.0));
+        assert_eq!(root.link, Some("https://example.com".to_string()));
+        assert_eq!(root.notes, "A note");
+    }
+}

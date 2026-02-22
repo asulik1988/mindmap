@@ -90,6 +90,7 @@ fn _offset_opt(x: f32, rng: &mut Rng, roughness: f32, roughness_gain: f32) -> f3
 }
 
 /// `_line()` from renderer.ts — converts a line segment into ops (move + bcurveTo).
+#[allow(clippy::too_many_arguments)]
 fn _line(
     x1: f32,
     y1: f32,
@@ -209,6 +210,7 @@ fn _double_line(x1: f32, y1: f32, x2: f32, y2: f32, rng: &mut Rng, o: &RoughOpti
 }
 
 /// `_bezierTo()` from renderer.ts — wobble a cubic bezier.
+#[allow(clippy::too_many_arguments)]
 fn _bezier_to(
     x1: f32,
     y1: f32,
@@ -412,27 +414,22 @@ fn rounded_rect_segments(rect: Rect, rounding: f32) -> Vec<PathSeg> {
     //   cp1 = current + 2/3 * (Q_cp - current)
     //   cp2 = end     + 2/3 * (Q_cp - end)
 
-    let mut segs = Vec::new();
-    segs.push(PathSeg::Move(l + r, t));
-
-    // Top edge -> top-right corner
-    segs.push(PathSeg::Line(ri - r, t));
-    segs.push(quad_to_cubic(ri - r, t, ri, t, ri, t + r));
-
-    // Right edge -> bottom-right corner
-    segs.push(PathSeg::Line(ri, b - r));
-    segs.push(quad_to_cubic(ri, b - r, ri, b, ri - r, b));
-
-    // Bottom edge -> bottom-left corner
-    segs.push(PathSeg::Line(l + r, b));
-    segs.push(quad_to_cubic(l + r, b, l, b, l, b - r));
-
-    // Left edge -> top-left corner
-    segs.push(PathSeg::Line(l, t + r));
-    segs.push(quad_to_cubic(l, t + r, l, t, l + r, t));
-
-    segs.push(PathSeg::Close);
-    segs
+    vec![
+        PathSeg::Move(l + r, t),
+        // Top edge -> top-right corner
+        PathSeg::Line(ri - r, t),
+        quad_to_cubic(ri - r, t, ri, t, ri, t + r),
+        // Right edge -> bottom-right corner
+        PathSeg::Line(ri, b - r),
+        quad_to_cubic(ri, b - r, ri, b, ri - r, b),
+        // Bottom edge -> bottom-left corner
+        PathSeg::Line(l + r, b),
+        quad_to_cubic(l + r, b, l, b, l, b - r),
+        // Left edge -> top-left corner
+        PathSeg::Line(l, t + r),
+        quad_to_cubic(l, t + r, l, t, l + r, t),
+        PathSeg::Close,
+    ]
 }
 
 /// Convert quadratic bezier (from, Q_cp, to) into a cubic PathSeg.
@@ -482,6 +479,7 @@ fn render_path_segments(segs: &[PathSeg], rng: &mut Rng, o: &RoughOptions) -> Ve
 const BEZIER_SAMPLES: usize = 20;
 
 /// Evaluate a cubic bezier at parameter `t`.
+#[allow(clippy::too_many_arguments)]
 fn cubic_bezier_point(
     p0x: f32,
     p0y: f32,

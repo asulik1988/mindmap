@@ -116,7 +116,7 @@ pub(crate) fn draw_style_panel(
             egui::pos2(panel_rect.max.x - 40.0, y + 4.0),
             egui::vec2(28.0, 28.0),
         );
-        let reset_hovered = pointer_pos.map_or(false, |p| reset_rect.contains(p));
+        let reset_hovered = pointer_pos.is_some_and(|p| reset_rect.contains(p));
         if reset_hovered {
             painter.add(RectShape::new(
                 reset_rect,
@@ -169,13 +169,13 @@ pub(crate) fn draw_style_panel(
     y += 2.0;
 
     // Depth rows
-    for depth in 0..8usize {
+    for (depth, depth_label) in DEPTH_LABELS.iter().enumerate() {
         let row_rect = egui::Rect::from_min_size(
             egui::pos2(panel_rect.min.x + 4.0, y),
             egui::vec2(STYLE_PANEL_WIDTH - 8.0, DEPTH_ROW_HEIGHT),
         );
 
-        let row_hovered = pointer_pos.map_or(false, |p| row_rect.contains(p));
+        let row_hovered = pointer_pos.is_some_and(|p| row_rect.contains(p));
         let is_selected = selected_depth == Some(depth);
 
         // Hover/selection background
@@ -215,7 +215,7 @@ pub(crate) fn draw_style_panel(
         painter.text(
             egui::pos2(row_rect.min.x + 48.0, row_rect.center().y),
             egui::Align2::LEFT_CENTER,
-            DEPTH_LABELS[depth],
+            depth_label,
             egui::FontId::proportional(14.0),
             label_color,
         );
@@ -274,7 +274,7 @@ pub(crate) fn draw_style_panel(
                         );
                     }
 
-                    let swatch_hovered = pointer_pos.map_or(false, |p| swatch_r.contains(p));
+                    let swatch_hovered = pointer_pos.is_some_and(|p| swatch_r.contains(p));
                     if swatch_hovered {
                         painter.rect_stroke(
                             swatch_r,
@@ -359,6 +359,7 @@ fn dfs_collect_notes(tree: &MindmapTree, id: NodeId, out: &mut Vec<NodeId>) {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn draw_notes_panel(
     ui: &mut egui::Ui,
     panel_rect: egui::Rect,
@@ -428,7 +429,7 @@ pub(crate) fn draw_notes_panel(
         panel_rect.min.y + NOTES_HEADER_H / 2.0,
     );
     let close_btn_rect = egui::Rect::from_center_size(close_center, egui::vec2(20.0, 20.0));
-    let close_hovered = pointer_pos.map_or(false, |p| close_btn_rect.contains(p));
+    let close_hovered = pointer_pos.is_some_and(|p| close_btn_rect.contains(p));
     if close_hovered {
         ui.ctx().set_cursor_icon(egui::CursorIcon::PointingHand);
         ui.painter()
@@ -457,7 +458,7 @@ pub(crate) fn draw_notes_panel(
     if edit_node.is_some() {
         // Edit mode: "← All Notes" link
         let back_color = egui::Color32::from_rgb(30, 136, 229);
-        let back_hovered = pointer_pos.map_or(false, |p| {
+        let back_hovered = pointer_pos.is_some_and(|p| {
             p.y >= panel_rect.min.y
                 && p.y <= panel_rect.min.y + NOTES_HEADER_H
                 && p.x >= header_x
@@ -705,7 +706,7 @@ pub(crate) fn draw_notes_panel(
                     ui.allocate_exact_size(egui::vec2(scroll_width, entry_h), egui::Sense::click());
 
                 let ptr = ui.input(|i| i.pointer.hover_pos());
-                let hovered = ptr.map_or(false, |p| entry_rect.contains(p));
+                let hovered = ptr.is_some_and(|p| entry_rect.contains(p));
 
                 // Pencil hit rect (top-right of entry)
                 let pencil_rect = egui::Rect::from_min_size(
@@ -715,7 +716,7 @@ pub(crate) fn draw_notes_panel(
                     ),
                     egui::vec2(20.0, 20.0),
                 );
-                let pencil_hovered = ptr.map_or(false, |p| pencil_rect.contains(p));
+                let pencil_hovered = ptr.is_some_and(|p| pencil_rect.contains(p));
 
                 // Hover background
                 if hovered {
@@ -924,10 +925,8 @@ pub(crate) fn draw_link_edit_bar(
     }
 
     // Enter = confirm, Escape = cancel
-    if te_response.lost_focus() {
-        if ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-            return LinkEditAction::Confirm;
-        }
+    if te_response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+        return LinkEditAction::Confirm;
     }
     if ui.input(|i| i.key_pressed(egui::Key::Escape)) {
         return LinkEditAction::Cancel;

@@ -19,6 +19,19 @@ Thanks for your interest in contributing! Here's how to get started.
    cargo build
    ```
 
+## Building & Testing
+
+Before submitting a PR, run these checks locally:
+
+```bash
+cargo fmt -- --check   # formatting
+cargo clippy -- -D warnings   # lints
+cargo test             # unit tests
+cargo build --release  # full release build
+```
+
+CI runs formatting, linting, and tests on every push and PR. Release builds (Windows installer, macOS DMG) only run on version tags — run `cargo build --release` locally to verify your changes compile in release mode.
+
 ## Making Changes
 
 - Keep changes focused — one feature or fix per PR

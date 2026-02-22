@@ -62,3 +62,39 @@ fn xml_escape(s: &str) -> String {
         .replace('"', "&quot;")
         .replace('\'', "&apos;")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::MindmapTree;
+
+    #[test]
+    fn valid_opml_structure() {
+        let mut tree = MindmapTree::new_empty("My Map");
+        tree.add_child(tree.root, "Child");
+        let opml = export_opml(&tree);
+        assert!(opml.contains("<?xml version=\"1.0\""));
+        assert!(opml.contains("<opml version=\"2.0\">"));
+        assert!(opml.contains("<title>My Map</title>"));
+        assert!(opml.contains("<body>"));
+        assert!(opml.contains("</body>"));
+        assert!(opml.contains("</opml>"));
+        assert!(opml.contains("text=\"Child\""));
+    }
+
+    #[test]
+    fn notes_as_attribute() {
+        let mut tree = MindmapTree::new_empty("Root");
+        let c = tree.add_child(tree.root, "WithNote");
+        tree.nodes[c].notes = "A note".to_string();
+        let opml = export_opml(&tree);
+        assert!(opml.contains("_note=\"A note\""));
+    }
+
+    #[test]
+    fn xml_escaping_in_output() {
+        let mut tree = MindmapTree::new_empty("A & B < C");
+        let opml = export_opml(&tree);
+        assert!(opml.contains("A &amp; B &lt; C"));
+    }
+}

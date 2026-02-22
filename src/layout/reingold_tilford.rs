@@ -75,7 +75,7 @@ fn layout_subtree(
     node_id: NodeId,
     x: f32,
     y: f32,
-    depth: usize,
+    _depth: usize,
     x_direction: f32,
 ) {
     tree.nodes[node_id].layout_pos = Pos2::new(x, y);
@@ -106,7 +106,7 @@ fn layout_subtree(
         let subtree_h = subtree_heights[i];
         let center_y = current_y + subtree_h / 2.0;
 
-        layout_subtree(tree, child_id, child_x, center_y, depth + 1, x_direction);
+        layout_subtree(tree, child_id, child_x, center_y, _depth + 1, x_direction);
 
         current_y += subtree_h + SIBLING_GAP;
     }

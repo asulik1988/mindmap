@@ -170,3 +170,71 @@ fn convert_node(
     nodes[id].children = child_ids;
     id
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_minimal_mm() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="Root" ID="ID_1">
+                <node TEXT="Child1" ID="ID_2" POSITION="right"/>
+                <node TEXT="Child2" ID="ID_3" POSITION="left"/>
+            </node>
+        </map>"#;
+        let tree = parse_mm_xml(xml).unwrap();
+        assert_eq!(tree.nodes[tree.root].text, "Root");
+        assert_eq!(tree.nodes[tree.root].children.len(), 2);
+        let c1 = tree.nodes[tree.root].children[0];
+        let c2 = tree.nodes[tree.root].children[1];
+        assert_eq!(tree.nodes[c1].text, "Child1");
+        assert_eq!(tree.nodes[c1].position, Some(Side::Right));
+        assert_eq!(tree.nodes[c2].text, "Child2");
+        assert_eq!(tree.nodes[c2].position, Some(Side::Left));
+    }
+
+    #[test]
+    fn parse_attributes() {
+        let xml = r##"<map version="1.0.1">
+            <node TEXT="Root" ID="ID_1" COLOR="#ff0000" BACKGROUND_COLOR="#00ff00"
+                  FOLDED="true" CREATED="1000" MODIFIED="2000" LINK="https://example.com">
+                <font BOLD="true" NAME="Arial" SIZE="18"/>
+            </node>
+        </map>"##;
+        let tree = parse_mm_xml(xml).unwrap();
+        let root = &tree.nodes[tree.root];
+        assert_eq!(root.color, Some(Color32::from_rgb(255, 0, 0)));
+        assert_eq!(root.background_color, Some(Color32::from_rgb(0, 255, 0)));
+        assert!(root.folded);
+        assert_eq!(root.created, Some(1000));
+        assert_eq!(root.modified, Some(2000));
+        assert_eq!(root.link, Some("https://example.com".to_string()));
+        assert!(root.bold);
+        assert_eq!(root.font_size, Some(18.0));
+        assert_eq!(root.font_name, Some("Arial".to_string()));
+    }
+
+    #[test]
+    fn parse_notes() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="Root" ID="ID_1">
+                <richcontent TYPE="NOTE"><html><head></head><body>
+                    <p>Line one</p>
+                    <p>Line two</p>
+                </body></html></richcontent>
+            </node>
+        </map>"#;
+        let tree = parse_mm_xml(xml).unwrap();
+        assert_eq!(tree.nodes[tree.root].notes, "Line one\nLine two");
+    }
+
+    #[test]
+    fn parse_xml_entities_in_text() {
+        let xml = r#"<map version="1.0.1">
+            <node TEXT="A &amp; B &lt; C &gt; D" ID="ID_1"/>
+        </map>"#;
+        let tree = parse_mm_xml(xml).unwrap();
+        assert_eq!(tree.nodes[tree.root].text, "A & B < C > D");
+    }
+}

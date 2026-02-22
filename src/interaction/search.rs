@@ -1,5 +1,6 @@
 use crate::model::{MindmapTree, NodeId};
 
+#[derive(Default)]
 pub struct SearchState {
     pub active: bool,
     pub query: String,
@@ -9,21 +10,6 @@ pub struct SearchState {
     pub replace_text: String,
     pub replace_active: bool,
     prev_query: String,
-}
-
-impl Default for SearchState {
-    fn default() -> Self {
-        Self {
-            active: false,
-            query: String::new(),
-            matches: Vec::new(),
-            current_index: 0,
-            select_all_pending: false,
-            replace_text: String::new(),
-            replace_active: false,
-            prev_query: String::new(),
-        }
-    }
 }
 
 impl SearchState {
@@ -73,9 +59,7 @@ impl SearchState {
         }
 
         // Try to keep current_index in bounds
-        if self.matches.is_empty() {
-            self.current_index = 0;
-        } else if self.current_index >= self.matches.len() {
+        if self.matches.is_empty() || self.current_index >= self.matches.len() {
             self.current_index = 0;
         }
     }
@@ -105,5 +89,80 @@ impl SearchState {
         if let Some(idx) = self.matches.iter().position(|&id| id == node_id) {
             self.current_index = idx;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::MindmapTree;
+
+    fn make_tree() -> MindmapTree {
+        let mut tree = MindmapTree::new_empty("Root");
+        let a = tree.add_child(tree.root, "Alpha");
+        tree.add_child(a, "Alpha Beta");
+        tree.add_child(tree.root, "Gamma");
+        tree
+    }
+
+    #[test]
+    fn finds_case_insensitive_matches() {
+        let tree = make_tree();
+        let mut search = SearchState::default();
+        search.query = "alpha".to_string();
+        search.update_matches(&tree);
+        assert_eq!(search.matches.len(), 2); // "Alpha" and "Alpha Beta"
+    }
+
+    #[test]
+    fn empty_query_no_matches() {
+        let tree = make_tree();
+        let mut search = SearchState::default();
+        search.query = String::new();
+        search.update_matches(&tree);
+        assert!(search.matches.is_empty());
+    }
+
+    #[test]
+    fn no_match_query() {
+        let tree = make_tree();
+        let mut search = SearchState::default();
+        search.query = "zzz".to_string();
+        search.update_matches(&tree);
+        assert!(search.matches.is_empty());
+        assert_eq!(search.current_match(), None);
+    }
+
+    #[test]
+    fn next_prev_cycling() {
+        let tree = make_tree();
+        let mut search = SearchState::default();
+        search.query = "alpha".to_string();
+        search.update_matches(&tree);
+        assert_eq!(search.current_index, 0);
+        search.next();
+        assert_eq!(search.current_index, 1);
+        search.next(); // wraps to 0
+        assert_eq!(search.current_index, 0);
+        search.prev(); // wraps to last
+        assert_eq!(search.current_index, 1);
+        search.prev();
+        assert_eq!(search.current_index, 0);
+    }
+
+    #[test]
+    fn close_resets_state() {
+        let tree = make_tree();
+        let mut search = SearchState::default();
+        search.open();
+        search.query = "alpha".to_string();
+        search.update_matches(&tree);
+        assert!(search.is_active());
+        assert!(!search.matches.is_empty());
+        search.close();
+        assert!(!search.is_active());
+        assert!(search.query.is_empty());
+        assert!(search.matches.is_empty());
+        assert_eq!(search.current_index, 0);
     }
 }

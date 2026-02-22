@@ -399,6 +399,13 @@ impl MindmapTree {
         SubtreeBlueprint { nodes }
     }
 
+    /// Create a minimal tree with just a root node, for testing/new maps.
+    #[cfg(test)]
+    pub fn new_empty(root_text: &str) -> Self {
+        let root = MindmapNode::new(0, "ID_0".to_string(), root_text.to_string());
+        Self::new(vec![root], 0)
+    }
+
     /// Paste a blueprint as a child of `parent_id`.
     /// Allocates new arena slots, remaps all internal refs, attaches root to parent.
     /// Returns (new_root_id, all_new_ids).
@@ -476,5 +483,254 @@ impl MindmapTree {
         self.nodes[parent_id].folded = false;
 
         (new_root_id, all_new_ids)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Build: root → { A (right), B (left) }, A → { A1, A2 }
+    fn sample_tree() -> MindmapTree {
+        let mut tree = MindmapTree::new_empty("Root");
+        // First child goes right (right_count=0 <= left_count=0)
+        let a = tree.add_child(tree.root, "A");
+        assert_eq!(tree.nodes[a].position, Some(Side::Right));
+        // Second child goes left (right=1 > left=0)
+        let b = tree.add_child(tree.root, "B");
+        assert_eq!(tree.nodes[b].position, Some(Side::Left));
+        // Children of A (non-root, no position assigned)
+        let _a1 = tree.add_child(a, "A1");
+        let _a2 = tree.add_child(a, "A2");
+        tree
+    }
+
+    fn find(tree: &MindmapTree, text: &str) -> NodeId {
+        tree.nodes
+            .iter()
+            .find(|n| n.text == text)
+            .unwrap_or_else(|| panic!("node '{}' not found", text))
+            .id
+    }
+
+    #[test]
+    fn add_child_balances_sides() {
+        let tree = sample_tree();
+        let root = tree.root;
+        assert_eq!(tree.nodes[root].children.len(), 2);
+        // Third child should go right again (right=1, left=1 → right)
+        let mut tree = tree;
+        let c = tree.add_child(root, "C");
+        assert_eq!(tree.nodes[c].position, Some(Side::Right));
+    }
+
+    #[test]
+    fn add_child_to_non_root() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let a3 = tree.add_child(a, "A3");
+        assert_eq!(tree.nodes[a3].parent, Some(a));
+        assert!(tree.nodes[a3].position.is_none()); // non-root children have no position
+        assert_eq!(tree.nodes[a].children.len(), 3);
+    }
+
+    #[test]
+    fn add_child_unfolds_parent() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        tree.toggle_fold(a);
+        assert!(tree.nodes[a].folded);
+        tree.add_child(a, "A3");
+        assert!(!tree.nodes[a].folded);
+    }
+
+    #[test]
+    fn add_sibling_after() {
+        let mut tree = sample_tree();
+        let a1 = find(&tree, "A1");
+        let a = find(&tree, "A");
+        let s = tree.add_sibling(a1, "S");
+        assert_eq!(tree.nodes[s].parent, Some(a));
+        // S should be right after A1
+        let children = &tree.nodes[a].children;
+        let a1_idx = children.iter().position(|&c| c == a1).unwrap();
+        assert_eq!(children[a1_idx + 1], s);
+    }
+
+    #[test]
+    fn add_sibling_before() {
+        let mut tree = sample_tree();
+        let a2 = find(&tree, "A2");
+        let a = find(&tree, "A");
+        let s = tree.add_sibling_before(a2, "S");
+        let children = &tree.nodes[a].children;
+        let a2_idx = children.iter().position(|&c| c == a2).unwrap();
+        assert_eq!(children[a2_idx - 1], s);
+    }
+
+    #[test]
+    fn add_sibling_inherits_position() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let s = tree.add_sibling(a, "S");
+        assert_eq!(tree.nodes[s].position, Some(Side::Right));
+    }
+
+    #[test]
+    fn delete_subtree_cascades() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        let a2 = find(&tree, "A2");
+        let saved = tree.delete_subtree(a);
+        assert!(saved.is_some());
+        let saved = saved.unwrap();
+        assert_eq!(saved.len(), 3); // A, A1, A2
+                                    // All deleted nodes should be cleared
+        assert!(tree.nodes[a].text.is_empty());
+        assert!(tree.nodes[a1].text.is_empty());
+        assert!(tree.nodes[a2].text.is_empty());
+        // Root should no longer reference A
+        assert!(!tree.nodes[tree.root].children.contains(&a));
+    }
+
+    #[test]
+    fn delete_root_returns_none() {
+        let mut tree = sample_tree();
+        assert!(tree.delete_subtree(tree.root).is_none());
+    }
+
+    #[test]
+    fn is_ancestor() {
+        let tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        assert!(tree.is_ancestor(tree.root, a1));
+        assert!(tree.is_ancestor(a, a1));
+        assert!(!tree.is_ancestor(a1, a)); // not reverse
+        assert!(!tree.is_ancestor(a, a)); // not self
+    }
+
+    #[test]
+    fn reparent_node() {
+        let mut tree = sample_tree();
+        let a1 = find(&tree, "A1");
+        let b = find(&tree, "B");
+        let a = find(&tree, "A");
+        let result = tree.reparent_node(a1, b);
+        assert!(result.is_some());
+        let (old_parent, _, _) = result.unwrap();
+        assert_eq!(old_parent, a);
+        assert_eq!(tree.nodes[a1].parent, Some(b));
+        assert!(tree.nodes[b].children.contains(&a1));
+        assert!(!tree.nodes[a].children.contains(&a1));
+    }
+
+    #[test]
+    fn move_sibling_up_down() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        let a2 = find(&tree, "A2");
+        // A1 is already first — move up should return None
+        assert!(tree.move_sibling_up(a1).is_none());
+        // Move A2 up
+        let result = tree.move_sibling_down(a1);
+        assert!(result.is_some());
+        assert_eq!(tree.nodes[a].children, vec![a2, a1]);
+        // Move back
+        tree.move_sibling_up(a1);
+        assert_eq!(tree.nodes[a].children, vec![a1, a2]);
+        // A2 is last — move down should return None
+        assert!(tree.move_sibling_down(a2).is_none());
+    }
+
+    #[test]
+    fn toggle_fold_and_visible_nodes() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        let a2 = find(&tree, "A2");
+        // All visible initially
+        let visible = tree.visible_nodes();
+        assert!(visible.contains(&a1));
+        assert!(visible.contains(&a2));
+        // Fold A
+        tree.toggle_fold(a);
+        assert!(tree.nodes[a].folded);
+        let visible = tree.visible_nodes();
+        assert!(!visible.contains(&a1));
+        assert!(!visible.contains(&a2));
+        assert!(visible.contains(&a)); // A itself is still visible
+                                       // Unfold
+        tree.toggle_fold(a);
+        assert!(!tree.nodes[a].folded);
+        let visible = tree.visible_nodes();
+        assert!(visible.contains(&a1));
+    }
+
+    #[test]
+    fn depth_and_dfs_order() {
+        let tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        assert_eq!(tree.depth(tree.root), 0);
+        assert_eq!(tree.depth(a), 1);
+        assert_eq!(tree.depth(a1), 2);
+        let dfs = tree.dfs_order();
+        // Root should be first
+        assert_eq!(dfs[0], tree.root);
+        // All 5 nodes present
+        assert_eq!(dfs.len(), 5);
+    }
+
+    #[test]
+    fn clone_and_paste_subtree() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let b = find(&tree, "B");
+        let blueprint = tree.clone_subtree(a);
+        assert_eq!(blueprint.nodes.len(), 3); // A, A1, A2
+        let (new_root, all_new) = tree.paste_subtree(&blueprint, b);
+        assert_eq!(all_new.len(), 3);
+        // New root should be a child of B
+        assert_eq!(tree.nodes[new_root].parent, Some(b));
+        assert!(tree.nodes[b].children.contains(&new_root));
+        // New IDs should be different from originals
+        assert_ne!(new_root, a);
+        // Text should be preserved
+        assert_eq!(tree.nodes[new_root].text, "A");
+        // Children should be remapped
+        let new_children = &tree.nodes[new_root].children;
+        assert_eq!(new_children.len(), 2);
+        assert_eq!(tree.nodes[new_children[0]].text, "A1");
+        assert_eq!(tree.nodes[new_children[1]].text, "A2");
+    }
+
+    #[test]
+    fn deduplicate_selection_removes_descendants() {
+        let tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        let b = find(&tree, "B");
+        let mut selected = HashSet::new();
+        selected.insert(a);
+        selected.insert(a1); // descendant of A
+        selected.insert(b);
+        let deduped = tree.deduplicate_selection(&selected);
+        assert_eq!(deduped.len(), 2);
+        assert!(deduped.contains(&a));
+        assert!(deduped.contains(&b));
+        assert!(!deduped.contains(&a1));
+    }
+
+    #[test]
+    fn unfold_path_to() {
+        let mut tree = sample_tree();
+        let a = find(&tree, "A");
+        let a1 = find(&tree, "A1");
+        tree.nodes[a].folded = true;
+        assert!(tree.unfold_path_to(a1));
+        assert!(!tree.nodes[a].folded);
     }
 }

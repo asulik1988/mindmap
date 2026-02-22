@@ -47,7 +47,7 @@ pub(crate) fn draw_search_bar(
         egui::vec2(caret_w, row_h),
     );
     let pointer_pos_early = ui.input(|i| i.pointer.hover_pos());
-    let caret_hovered = pointer_pos_early.map_or(false, |p| caret_rect.contains(p));
+    let caret_hovered = pointer_pos_early.is_some_and(|p| caret_rect.contains(p));
     let caret_clicked = caret_hovered && ui.input(|i| i.pointer.primary_clicked());
     if caret_clicked {
         search.replace_active = !search.replace_active;
@@ -264,7 +264,7 @@ pub(crate) fn draw_search_bar(
         egui::vec2(x_btn_size, x_btn_size),
     );
     let pointer_pos = ui.input(|i| i.pointer.hover_pos());
-    let x_hovered = pointer_pos.map_or(false, |p| x_btn_rect.contains(p));
+    let x_hovered = pointer_pos.is_some_and(|p| x_btn_rect.contains(p));
     let x_clicked = x_hovered && ui.input(|i| i.pointer.primary_clicked());
 
     if x_hovered {
@@ -403,7 +403,7 @@ pub(crate) fn draw_search_bar(
             egui::pos2(btn1_x, row2_y + 4.0),
             egui::vec2(btn_w, row_h - 8.0),
         );
-        let btn1_hovered = pointer_pos.map_or(false, |p| btn1_rect.contains(p));
+        let btn1_hovered = pointer_pos.is_some_and(|p| btn1_rect.contains(p));
         let btn1_clicked = btn1_hovered && ui.input(|i| i.pointer.primary_clicked());
 
         // "All" button
@@ -412,7 +412,7 @@ pub(crate) fn draw_search_bar(
             egui::pos2(btn2_x, row2_y + 4.0),
             egui::vec2(btn_w, row_h - 8.0),
         );
-        let btn2_hovered = pointer_pos.map_or(false, |p| btn2_rect.contains(p));
+        let btn2_hovered = pointer_pos.is_some_and(|p| btn2_rect.contains(p));
         let btn2_clicked = btn2_hovered && ui.input(|i| i.pointer.primary_clicked());
 
         if btn1_hovered || btn2_hovered {

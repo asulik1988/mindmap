@@ -1,7 +1,9 @@
 use crate::model::{Clipboard, MindmapTree, NodeId, Selection};
 use crate::style::colors::{self, DepthColorConfig};
 use crate::style::wobble::{self, RoughOptions};
-use crate::ui::{DIVIDER_HEIGHT, ITEM_HEIGHT, MENU_PAD_Y, SWATCH_COLS, SWATCH_GAP, SWATCH_ROWS, SWATCH_SIZE};
+use crate::ui::{
+    DIVIDER_HEIGHT, ITEM_HEIGHT, MENU_PAD_Y, SWATCH_COLS, SWATCH_GAP, SWATCH_ROWS, SWATCH_SIZE,
+};
 use eframe::egui;
 use egui::epaint::{PathShape, RectShape, StrokeKind};
 
@@ -67,11 +69,11 @@ fn build_context_items(
     }
 
     let primary = selection.primary();
-    let is_root = primary.map_or(false, |id| id == tree.root);
+    let is_root = primary.is_some_and(|id| id == tree.root);
     let is_multi = selection.selected.len() > 1;
-    let is_leaf = primary.map_or(true, |id| tree.nodes[id].children.is_empty());
-    let is_folded = primary.map_or(false, |id| tree.nodes[id].folded);
-    let has_link = primary.map_or(false, |id| tree.nodes[id].link.is_some());
+    let is_leaf = primary.is_none_or(|id| tree.nodes[id].children.is_empty());
+    let is_folded = primary.is_some_and(|id| tree.nodes[id].folded);
+    let has_link = primary.is_some_and(|id| tree.nodes[id].link.is_some());
 
     let fold_label = if is_folded { "Unfold" } else { "Fold" };
 
@@ -247,6 +249,7 @@ pub(crate) fn context_menu_rect(
     egui::Rect::from_min_size(egui::pos2(x, y), egui::vec2(w, h))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn draw_context_menu(
     ui: &egui::Ui,
     state: &mut ContextMenuState,
@@ -341,7 +344,7 @@ pub(crate) fn draw_context_menu(
                     egui::pos2(panel_rect.min.x + 4.0, y),
                     egui::vec2(CTX_MENU_WIDTH - 8.0, item_h),
                 );
-                let hovered = pointer_pos.map_or(false, |p| item_rect.contains(p));
+                let hovered = pointer_pos.is_some_and(|p| item_rect.contains(p));
 
                 // Hover background
                 if hovered || state.color_picker_open {
@@ -465,7 +468,7 @@ pub(crate) fn draw_context_menu(
                                 }
 
                                 let swatch_hovered =
-                                    pointer_pos.map_or(false, |p| swatch_r.contains(p));
+                                    pointer_pos.is_some_and(|p| swatch_r.contains(p));
                                 if swatch_hovered {
                                     painter.rect_stroke(
                                         swatch_r,
@@ -495,7 +498,7 @@ pub(crate) fn draw_context_menu(
                     egui::pos2(panel_rect.min.x + 4.0, y),
                     egui::vec2(CTX_MENU_WIDTH - 8.0, ITEM_HEIGHT),
                 );
-                let hovered = pointer_pos.map_or(false, |p| item_rect.contains(p));
+                let hovered = pointer_pos.is_some_and(|p| item_rect.contains(p));
 
                 if menu_item.enabled {
                     // Hover background

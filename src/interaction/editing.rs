@@ -18,6 +18,7 @@ pub enum EditResult {
     DeleteEmpty(NodeId),
 }
 
+#[derive(Default)]
 pub struct EditingState {
     pub active_node: Option<NodeId>,
     pub text_buffer: String,
@@ -26,18 +27,6 @@ pub struct EditingState {
     /// When true, the text was cleared because the user started typing on a selected node.
     /// We need to inject the initial character.
     pub replace_mode_char: Option<String>,
-}
-
-impl Default for EditingState {
-    fn default() -> Self {
-        Self {
-            active_node: None,
-            text_buffer: String::new(),
-            original_text: String::new(),
-            just_started: false,
-            replace_mode_char: None,
-        }
-    }
 }
 
 impl EditingState {

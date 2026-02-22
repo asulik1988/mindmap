@@ -11,6 +11,7 @@ use std::collections::{HashMap, HashSet};
 pub type NodeRects = HashMap<usize, Rect>;
 
 /// Main render function: draws the entire canvas.
+#[allow(clippy::too_many_arguments)]
 pub fn draw_canvas(
     painter: &Painter,
     tree: &MindmapTree,

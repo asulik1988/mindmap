@@ -290,6 +290,7 @@ pub(crate) fn draw_notes_button(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn draw_zoom_controls(
     painter: &egui::Painter,
     minus_rect: egui::Rect,

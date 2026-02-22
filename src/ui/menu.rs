@@ -179,7 +179,7 @@ fn draw_export_submenu(ui: &egui::Ui, pos: egui::Pos2, dark_mode: bool) -> MenuA
             egui::pos2(panel_rect.min.x + 4.0, y),
             egui::vec2(SUBMENU_WIDTH - 8.0, ITEM_HEIGHT),
         );
-        let hovered = pointer_pos.map_or(false, |p| item_rect.contains(p));
+        let hovered = pointer_pos.is_some_and(|p| item_rect.contains(p));
         if hovered {
             painter.add(RectShape::new(
                 item_rect,
@@ -293,7 +293,7 @@ pub(crate) fn draw_menu_panel(
                     egui::pos2(panel_rect.min.x + 4.0, y),
                     egui::vec2(MENU_WIDTH - 8.0, ITEM_HEIGHT),
                 );
-                let hovered = pointer_pos.map_or(false, |p| item_rect.contains(p));
+                let hovered = pointer_pos.is_some_and(|p| item_rect.contains(p));
 
                 // Hover background
                 if hovered {
@@ -375,8 +375,7 @@ pub(crate) fn draw_menu_panel(
                             egui::pos2(panel_rect.min.x + 4.0, y),
                             egui::vec2(MENU_WIDTH - 8.0, ITEM_HEIGHT),
                         );
-                        let hovered =
-                            enabled && pointer_pos.map_or(false, |p| item_rect.contains(p));
+                        let hovered = enabled && pointer_pos.is_some_and(|p| item_rect.contains(p));
                         if hovered {
                             painter.add(RectShape::new(
                                 item_rect,
@@ -422,9 +421,8 @@ pub(crate) fn draw_menu_panel(
     if let Some(row_rect) = export_row_rect {
         let sub_pos = egui::pos2(panel_rect.max.x, row_rect.min.y);
         let sub_rect = export_submenu_rect(sub_pos);
-        let show = pointer_pos.map_or(false, |p| {
-            row_rect.contains(p) || sub_rect.expand(2.0).contains(p)
-        });
+        let show =
+            pointer_pos.is_some_and(|p| row_rect.contains(p) || sub_rect.expand(2.0).contains(p));
         if show {
             let sub_action = draw_export_submenu(ui, sub_pos, dark_mode);
             if sub_action != MenuAction::None {
@@ -463,7 +461,7 @@ pub(crate) fn draw_menu_panel(
                 egui::pos2(panel_rect.min.x + 4.0, y),
                 egui::vec2(MENU_WIDTH - 8.0, ITEM_HEIGHT),
             );
-            let hovered = pointer_pos.map_or(false, |p| item_rect.contains(p));
+            let hovered = pointer_pos.is_some_and(|p| item_rect.contains(p));
 
             if hovered {
                 painter.add(RectShape::new(

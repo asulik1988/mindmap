@@ -2,8 +2,6 @@ name: Build & Release
 
 on:
   push:
-    branches:
-      - "**"
     tags:
       - "v*"
 
@@ -26,8 +24,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
+      - name: Run tests
+        run: cargo test --locked
+
       - name: Build release binary
-        run: cargo build --release
+        run: cargo build --release --locked
 
       - name: Install Inno Setup
         run: choco install innosetup -y
@@ -58,11 +59,14 @@ jobs:
           targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@v2
 
+      - name: Run tests
+        run: cargo test --locked
+
       - name: Build ARM binary
-        run: cargo build --release --target aarch64-apple-darwin
+        run: cargo build --release --locked --target aarch64-apple-darwin
 
       - name: Build x86_64 binary
-        run: cargo build --release --target x86_64-apple-darwin
+        run: cargo build --release --locked --target x86_64-apple-darwin
 
       - name: Create universal binary
         run: |

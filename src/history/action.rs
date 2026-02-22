@@ -58,20 +58,11 @@ pub enum Action {
     },
 }
 
+#[derive(Default)]
 pub struct History {
     undo_stack: Vec<Action>,
     redo_stack: Vec<Action>,
     dirty: bool,
-}
-
-impl Default for History {
-    fn default() -> Self {
-        Self {
-            undo_stack: Vec::new(),
-            redo_stack: Vec::new(),
-            dirty: false,
-        }
-    }
 }
 
 impl History {

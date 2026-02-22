@@ -33,3 +33,37 @@ fn write_node_md(tree: &MindmapTree, id: NodeId, depth: usize, out: &mut String)
         write_node_md(tree, child_id, depth + 1, out);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::MindmapTree;
+
+    #[test]
+    fn heading_depths() {
+        let mut tree = MindmapTree::new_empty("Root");
+        let d1 = tree.add_child(tree.root, "D1");
+        let d2 = tree.add_child(d1, "D2");
+        let d3 = tree.add_child(d2, "D3");
+        let d4 = tree.add_child(d3, "D4");
+        let d5 = tree.add_child(d4, "D5");
+        tree.add_child(d5, "D6");
+        let md = export_markdown(&tree);
+        assert!(md.contains("# Root\n"));
+        assert!(md.contains("## D1\n"));
+        assert!(md.contains("### D2\n"));
+        assert!(md.contains("#### D3\n"));
+        assert!(md.contains("##### D4\n"));
+        assert!(md.contains("###### D5\n"));
+        assert!(md.contains("- D6\n")); // depth 6+ uses bullets
+    }
+
+    #[test]
+    fn notes_as_blockquotes() {
+        let mut tree = MindmapTree::new_empty("Root");
+        tree.nodes[tree.root].notes = "A note\nSecond line".to_string();
+        let md = export_markdown(&tree);
+        assert!(md.contains("> A note\n"));
+        assert!(md.contains("> Second line\n"));
+    }
+}

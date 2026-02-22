@@ -68,12 +68,7 @@ fn unfold_and_relayout(tree: &mut MindmapTree, nid: NodeId, painter: &egui::Pain
 }
 
 /// Zoom and center the viewport so that `nid` fills ~25% of screen width.
-fn zoom_to_node(
-    viewport: &mut Viewport,
-    nid: NodeId,
-    tree: &MindmapTree,
-    screen_rect: egui::Rect,
-) {
+fn zoom_to_node(viewport: &mut Viewport, nid: NodeId, tree: &MindmapTree, screen_rect: egui::Rect) {
     let node = &tree.nodes[nid];
     let canvas_pos = node.layout_pos;
     let target_zoom = (screen_rect.width() * 0.25 / node.layout_size.x).clamp(1.0, 3.0);
@@ -121,6 +116,7 @@ fn create_sibling_and_edit(
 
 /// Handle context menu action dispatch. Takes individual fields to avoid
 /// double-borrowing `self` when `tree` is already split-borrowed.
+#[allow(clippy::too_many_arguments)]
 fn handle_context_action(
     action: ContextAction,
     tree: &mut MindmapTree,
@@ -190,7 +186,7 @@ fn handle_context_action(
         ContextAction::Cut => {
             if !selection.selected.is_empty() {
                 let deduped = tree.deduplicate_selection(&selection.selected);
-                let has_root = deduped.iter().any(|&id| id == tree.root);
+                let has_root = deduped.contains(&tree.root);
                 if !has_root && !deduped.is_empty() {
                     clipboard.clear();
                     for &id in &deduped {
@@ -235,10 +231,8 @@ fn handle_context_action(
                         if first_root.is_none() {
                             first_root = Some(new_root);
                         }
-                        let saved: Vec<_> = all_ids
-                            .iter()
-                            .map(|&id| tree.nodes[id].clone())
-                            .collect();
+                        let saved: Vec<_> =
+                            all_ids.iter().map(|&id| tree.nodes[id].clone()).collect();
                         entries.push(PasteEntry {
                             new_root_id: new_root,
                             parent_id,
@@ -340,6 +334,7 @@ fn handle_context_action(
 
 /// Handle search bar interaction. Takes individual fields to avoid
 /// double-borrowing `self` when `tree` is already split-borrowed.
+#[allow(clippy::too_many_arguments)]
 fn handle_search_bar(
     ui: &mut egui::Ui,
     tree: &mut MindmapTree,
@@ -601,9 +596,7 @@ impl MindmapApp {
                         (egui::Key::F, m) if m.ctrl && !m.shift => {
                             return MenuAction::OpenSearch;
                         }
-                        (egui::Key::Minus, m)
-                            if m.ctrl && m.shift && !self.editing.is_active() =>
-                        {
+                        (egui::Key::Minus, m) if m.ctrl && m.shift && !self.editing.is_active() => {
                             return MenuAction::FoldAll;
                         }
                         (egui::Key::Equals, m)
@@ -946,13 +939,11 @@ impl eframe::App for MindmapApp {
                                     let parent_id = tree.nodes[node_id].parent;
                                     let child_index = tree.child_index(node_id).unwrap_or(0);
                                     if let Some(subtree) = tree.delete_subtree(node_id) {
-                                        self.history.push(
-                                            crate::history::Action::DeleteSubtree {
-                                                subtree,
-                                                parent_id: parent_id.unwrap_or(tree.root),
-                                                _child_index: child_index,
-                                            },
-                                        );
+                                        self.history.push(crate::history::Action::DeleteSubtree {
+                                            subtree,
+                                            parent_id: parent_id.unwrap_or(tree.root),
+                                            _child_index: child_index,
+                                        });
                                         if let Some(pid) = parent_id {
                                             self.selection.select_single(pid);
                                             ensure_visible = Some(pid);
@@ -1014,8 +1005,7 @@ impl eframe::App for MindmapApp {
                                 cm.color_picker_open,
                             );
                             let pointer_pos = ui.input(|i| i.pointer.hover_pos());
-                            let clicked_in =
-                                pointer_pos.map_or(false, |p| panel_rect.contains(p));
+                            let clicked_in = pointer_pos.is_some_and(|p| panel_rect.contains(p));
                             if !clicked_in {
                                 self.context_menu = None;
                             }
@@ -1065,7 +1055,7 @@ impl eframe::App for MindmapApp {
                         let ptr = ui.input(|i| i.pointer.hover_pos());
                         let primary_down = ui.input(|i| i.pointer.primary_down());
                         let primary_clicked = ui.input(|i| i.pointer.primary_clicked());
-                        let in_minimap = ptr.map_or(false, |p| minimap_rect.contains(p));
+                        let in_minimap = ptr.is_some_and(|p| minimap_rect.contains(p));
 
                         if in_minimap && primary_down {
                             self.minimap_dragging = true;
@@ -1080,9 +1070,8 @@ impl eframe::App for MindmapApp {
                                     let all_bounds =
                                         search_viewport::compute_all_nodes_bounds(tree);
                                     if all_bounds.width() > 0.0 && all_bounds.height() > 0.0 {
-                                        let scale =
-                                            (minimap_rect.width() / all_bounds.width())
-                                                .min(minimap_rect.height() / all_bounds.height());
+                                        let scale = (minimap_rect.width() / all_bounds.width())
+                                            .min(minimap_rect.height() / all_bounds.height());
                                         let scaled_w = all_bounds.width() * scale;
                                         let scaled_h = all_bounds.height() * scale;
                                         let offset_x = (minimap_rect.width() - scaled_w) / 2.0;
@@ -1140,8 +1129,7 @@ impl eframe::App for MindmapApp {
                     );
 
                     let pointer_pos = ui.input(|i| i.pointer.hover_pos());
-                    let hamburger_hovered =
-                        pointer_pos.map_or(false, |p| hamburger_rect.contains(p));
+                    let hamburger_hovered = pointer_pos.is_some_and(|p| hamburger_rect.contains(p));
 
                     toolbar::draw_hamburger_button(
                         ui.painter(),
@@ -1170,9 +1158,9 @@ impl eframe::App for MindmapApp {
                             let panel_rect =
                                 menu::menu_panel_rect(panel_pos, self.recent_files.len());
                             let clicked_in_menu =
-                                pointer_pos.map_or(false, |p| panel_rect.contains(p));
+                                pointer_pos.is_some_and(|p| panel_rect.contains(p));
                             let clicked_in_hamburger =
-                                pointer_pos.map_or(false, |p| hamburger_rect.contains(p));
+                                pointer_pos.is_some_and(|p| hamburger_rect.contains(p));
                             if !clicked_in_menu && !clicked_in_hamburger {
                                 self.menu_open = false;
                             }
@@ -1180,15 +1168,16 @@ impl eframe::App for MindmapApp {
                     }
 
                     // Hamburger click toggle
-                    if ui.input(|i| i.pointer.primary_clicked()) {
-                        if hamburger_hovered && menu_action == MenuAction::None {
-                            self.menu_open = !self.menu_open;
-                            if self.menu_open {
-                                self.style_panel_open = false;
-                                self.style_selected_depth = None;
-                                self.context_menu = None;
-                                self.search.close();
-                            }
+                    if ui.input(|i| i.pointer.primary_clicked())
+                        && hamburger_hovered
+                        && menu_action == MenuAction::None
+                    {
+                        self.menu_open = !self.menu_open;
+                        if self.menu_open {
+                            self.style_panel_open = false;
+                            self.style_selected_depth = None;
+                            self.context_menu = None;
+                            self.search.close();
                         }
                     }
 
@@ -1201,8 +1190,7 @@ impl eframe::App for MindmapApp {
                         egui::pos2(hamburger_rect.max.x + 8.0, hamburger_rect.min.y),
                         egui::vec2(36.0, 36.0),
                     );
-                    let style_btn_hovered =
-                        pointer_pos.map_or(false, |p| style_btn_rect.contains(p));
+                    let style_btn_hovered = pointer_pos.is_some_and(|p| style_btn_rect.contains(p));
                     toolbar::draw_style_button(
                         ui.painter(),
                         style_btn_rect,
@@ -1216,16 +1204,17 @@ impl eframe::App for MindmapApp {
                     }
 
                     let mut _style_panel_clicked_inside = false;
-                    if ui.input(|i| i.pointer.primary_clicked()) {
-                        if style_btn_hovered && menu_action == MenuAction::None {
-                            self.style_panel_open = !self.style_panel_open;
-                            if self.style_panel_open {
-                                self.menu_open = false;
-                                self.context_menu = None;
-                                self.search.close();
-                            } else {
-                                self.style_selected_depth = None;
-                            }
+                    if ui.input(|i| i.pointer.primary_clicked())
+                        && style_btn_hovered
+                        && menu_action == MenuAction::None
+                    {
+                        self.style_panel_open = !self.style_panel_open;
+                        if self.style_panel_open {
+                            self.menu_open = false;
+                            self.context_menu = None;
+                            self.search.close();
+                        } else {
+                            self.style_selected_depth = None;
                         }
                     }
 
@@ -1264,8 +1253,8 @@ impl eframe::App for MindmapApp {
                         // Click outside style panel -> close
                         if ui.input(|i| i.pointer.primary_clicked()) {
                             let ptr = pointer_pos;
-                            let in_panel = ptr.map_or(false, |p| panel_rect.contains(p));
-                            let in_btn = ptr.map_or(false, |p| style_btn_rect.contains(p));
+                            let in_panel = ptr.is_some_and(|p| panel_rect.contains(p));
+                            let in_btn = ptr.is_some_and(|p| style_btn_rect.contains(p));
                             if in_panel || in_btn {
                                 _style_panel_clicked_inside = true;
                             }
@@ -1282,7 +1271,7 @@ impl eframe::App for MindmapApp {
                         egui::vec2(36.0, 36.0),
                     );
                     let search_btn_hovered =
-                        pointer_pos.map_or(false, |p| search_btn_rect.contains(p));
+                        pointer_pos.is_some_and(|p| search_btn_rect.contains(p));
                     toolbar::draw_search_button(
                         ui.painter(),
                         search_btn_rect,
@@ -1295,17 +1284,18 @@ impl eframe::App for MindmapApp {
                         ui.ctx().set_cursor_icon(egui::CursorIcon::PointingHand);
                     }
 
-                    if ui.input(|i| i.pointer.primary_clicked()) {
-                        if search_btn_hovered && menu_action == MenuAction::None {
-                            if self.search.is_active() {
-                                self.search.close();
-                            } else {
-                                self.search.open();
-                                self.menu_open = false;
-                                self.style_panel_open = false;
-                                self.style_selected_depth = None;
-                                self.context_menu = None;
-                            }
+                    if ui.input(|i| i.pointer.primary_clicked())
+                        && search_btn_hovered
+                        && menu_action == MenuAction::None
+                    {
+                        if self.search.is_active() {
+                            self.search.close();
+                        } else {
+                            self.search.open();
+                            self.menu_open = false;
+                            self.style_panel_open = false;
+                            self.style_selected_depth = None;
+                            self.context_menu = None;
                         }
                     }
 
@@ -1314,8 +1304,7 @@ impl eframe::App for MindmapApp {
                         egui::pos2(search_btn_rect.max.x + 8.0, search_btn_rect.min.y),
                         egui::vec2(36.0, 36.0),
                     );
-                    let notes_btn_hovered =
-                        pointer_pos.map_or(false, |p| notes_btn_rect.contains(p));
+                    let notes_btn_hovered = pointer_pos.is_some_and(|p| notes_btn_rect.contains(p));
                     toolbar::draw_notes_button(
                         ui.painter(),
                         notes_btn_rect,
@@ -1328,19 +1317,20 @@ impl eframe::App for MindmapApp {
                         ui.ctx().set_cursor_icon(egui::CursorIcon::PointingHand);
                     }
 
-                    if ui.input(|i| i.pointer.primary_clicked()) {
-                        if notes_btn_hovered && menu_action == MenuAction::None {
-                            self.notes_panel_open = !self.notes_panel_open;
-                            if self.notes_panel_open {
-                                self.notes_suppress_close = true;
-                                self.menu_open = false;
-                                self.style_panel_open = false;
-                                self.style_selected_depth = None;
-                                self.context_menu = None;
-                                self.search.close();
-                            } else {
-                                self.notes_edit_node = None;
-                            }
+                    if ui.input(|i| i.pointer.primary_clicked())
+                        && notes_btn_hovered
+                        && menu_action == MenuAction::None
+                    {
+                        self.notes_panel_open = !self.notes_panel_open;
+                        if self.notes_panel_open {
+                            self.notes_suppress_close = true;
+                            self.menu_open = false;
+                            self.style_panel_open = false;
+                            self.style_selected_depth = None;
+                            self.context_menu = None;
+                            self.search.close();
+                        } else {
+                            self.notes_edit_node = None;
                         }
                     }
 
@@ -1360,12 +1350,10 @@ impl eframe::App for MindmapApp {
                             egui::vec2(28.0, 36.0),
                         );
 
-                        let minus_hovered =
-                            pointer_pos.map_or(false, |p| minus_rect.contains(p));
+                        let minus_hovered = pointer_pos.is_some_and(|p| minus_rect.contains(p));
                         let zoom_hovered =
-                            pointer_pos.map_or(false, |p| zoom_display_rect.contains(p));
-                        let plus_hovered =
-                            pointer_pos.map_or(false, |p| plus_rect.contains(p));
+                            pointer_pos.is_some_and(|p| zoom_display_rect.contains(p));
+                        let plus_hovered = pointer_pos.is_some_and(|p| plus_rect.contains(p));
 
                         toolbar::draw_zoom_controls(
                             ui.painter(),
@@ -1399,8 +1387,7 @@ impl eframe::App for MindmapApp {
 
                     // --- Link edit bar ---
                     if self.link_edit.is_some() {
-                        let suppress =
-                            std::mem::replace(&mut self.link_edit_suppress_close, false);
+                        let suppress = std::mem::replace(&mut self.link_edit_suppress_close, false);
                         let link_result = panels::draw_link_edit_bar(
                             ui,
                             &mut self.link_edit,
@@ -1431,8 +1418,7 @@ impl eframe::App for MindmapApp {
                         }
                         if !suppress && ui.input(|i| i.pointer.primary_clicked()) {
                             let bar_rect = panels::link_edit_bar_rect(screen_rect);
-                            let in_bar =
-                                pointer_pos.map_or(false, |p| bar_rect.contains(p));
+                            let in_bar = pointer_pos.is_some_and(|p| bar_rect.contains(p));
                             if !in_bar {
                                 self.link_edit = None;
                             }
@@ -1442,8 +1428,7 @@ impl eframe::App for MindmapApp {
                     // --- Notes panel ---
                     if self.notes_panel_open {
                         let toolbar_bottom = hamburger_rect.max.y;
-                        let panel_x =
-                            screen_rect.max.x - panels::NOTES_PANEL_WIDTH - 8.0;
+                        let panel_x = screen_rect.max.x - panels::NOTES_PANEL_WIDTH - 8.0;
                         let panel_y = toolbar_bottom + 8.0;
                         let panel_h = (screen_rect.height() - toolbar_bottom - 16.0)
                             .max(panels::NOTES_PANEL_MIN_HEIGHT);
@@ -1495,14 +1480,11 @@ impl eframe::App for MindmapApp {
                             zoom_to_node(&mut self.viewport, nav_id, tree, screen_rect);
                         }
 
-                        let suppress =
-                            std::mem::replace(&mut self.notes_suppress_close, false);
+                        let suppress = std::mem::replace(&mut self.notes_suppress_close, false);
                         if !suppress && ui.input(|i| i.pointer.primary_clicked()) {
                             let ptr = pointer_pos;
-                            let in_panel =
-                                ptr.map_or(false, |p| notes_panel_rect.contains(p));
-                            let in_btn =
-                                ptr.map_or(false, |p| notes_btn_rect.contains(p));
+                            let in_panel = ptr.is_some_and(|p| notes_panel_rect.contains(p));
+                            let in_btn = ptr.is_some_and(|p| notes_btn_rect.contains(p));
                             if !in_panel && !in_btn {
                                 self.notes_panel_open = false;
                                 self.notes_edit_node = None;
@@ -1548,8 +1530,7 @@ impl eframe::App for MindmapApp {
                         }
                         MenuAction::ExportSvg => {
                             self.menu_open = false;
-                            let svg =
-                                export::svg::export_svg(tree, &self.depth_color_config);
+                            let svg = export::svg::export_svg(tree, &self.depth_color_config);
                             if let Some(path) = rfd::FileDialog::new()
                                 .add_filter("SVG", &["svg"])
                                 .save_file()

@@ -292,3 +292,57 @@ pub fn node_palette_themed(
         node_palette(depth, config)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_cycling() {
+        let config = DepthColorConfig::new();
+        assert_eq!(config.get_fill_index(0), 0);
+        assert_eq!(config.get_fill_index(5), 5);
+        assert_eq!(config.get_fill_index(40), 0); // wraps at 40
+        assert_eq!(config.get_fill_index(41), 1);
+    }
+
+    #[test]
+    fn override_takes_precedence() {
+        let mut config = DepthColorConfig::new();
+        config.set_fill_index(0, 10); // depth%8==0 maps to index 10
+        assert_eq!(config.get_fill_index(0), 10);
+        assert_eq!(config.get_fill_index(8), 10); // same depth%8
+        assert_eq!(config.get_fill_index(1), 1); // unaffected
+    }
+
+    #[test]
+    fn preview_takes_precedence_over_override() {
+        let mut config = DepthColorConfig::new();
+        config.set_fill_index(0, 10);
+        config.set_preview(Some((0, 20)));
+        assert_eq!(config.get_fill_index(0), 20);
+        assert_eq!(config.get_fill_index(8), 20); // same depth%8
+        config.set_preview(None);
+        assert_eq!(config.get_fill_index(0), 10); // back to override
+    }
+
+    #[test]
+    fn font_size_tiers() {
+        assert_eq!(font_size_for_depth(0), 22.0);
+        assert_eq!(font_size_for_depth(1), 18.0);
+        assert_eq!(font_size_for_depth(2), 16.0);
+        assert_eq!(font_size_for_depth(3), 15.0);
+        assert_eq!(font_size_for_depth(4), 14.0);
+        assert_eq!(font_size_for_depth(100), 14.0); // deep depths use 14
+    }
+
+    #[test]
+    fn reset_clears_overrides() {
+        let mut config = DepthColorConfig::new();
+        config.set_fill_index(0, 10);
+        assert!(config.has_overrides());
+        config.reset_all();
+        assert!(!config.has_overrides());
+        assert_eq!(config.get_fill_index(0), 0);
+    }
+}

@@ -65,8 +65,8 @@ pub(crate) fn draw_welcome_screen(
 
     // Hover detection
     let pointer_pos = ui.input(|i| i.pointer.hover_pos());
-    let new_hovered = pointer_pos.map_or(false, |p| new_rect.contains(p));
-    let open_hovered = pointer_pos.map_or(false, |p| open_rect.contains(p));
+    let new_hovered = pointer_pos.is_some_and(|p| new_rect.contains(p));
+    let open_hovered = pointer_pos.is_some_and(|p| open_rect.contains(p));
 
     // Draw buttons (use depth-1 and depth-2 palette colors)
     let btn_fill_1 = colors::node_palette(1, color_config).fill;
@@ -154,7 +154,7 @@ pub(crate) fn draw_welcome_screen(
         for (idx, path) in entries.iter().enumerate() {
             let row_rect =
                 egui::Rect::from_min_size(egui::pos2(row_x, y), egui::vec2(section_w, row_h));
-            let hovered = pointer_pos.map_or(false, |p| row_rect.contains(p));
+            let hovered = pointer_pos.is_some_and(|p| row_rect.contains(p));
             if hovered {
                 recent_hovered = Some(idx);
                 painter.rect_filled(
@@ -457,14 +457,13 @@ pub(crate) fn draw_help_overlay(
     );
 
     // Dismiss on click outside the panel
-    let clicked_outside = ui.input(|i| {
+    ui.input(|i| {
         if i.pointer.primary_clicked() {
             i.pointer
                 .hover_pos()
-                .map_or(true, |p| !panel_rect.contains(p))
+                .is_none_or(|p| !panel_rect.contains(p))
         } else {
             false
         }
-    });
-    clicked_outside
+    })
 }

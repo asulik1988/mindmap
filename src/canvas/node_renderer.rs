@@ -16,7 +16,7 @@ const ROUGHNESS: f32 = 0.5;
 const SELECTION_COLOR: Color32 = Color32::from_rgb(30, 136, 229); // #1E88E5
 
 fn cr(r: f32) -> CornerRadius {
-    CornerRadius::same(r.round().max(0.0).min(255.0) as u8)
+    CornerRadius::same(r.round().clamp(0.0, 255.0) as u8)
 }
 
 fn with_alpha(color: Color32, alpha: f32) -> Color32 {
@@ -24,7 +24,7 @@ fn with_alpha(color: Color32, alpha: f32) -> Color32 {
         color.r(),
         color.g(),
         color.b(),
-        (color.a() as f32 * alpha).round().min(255.0).max(0.0) as u8,
+        (color.a() as f32 * alpha).round().clamp(0.0, 255.0) as u8,
     )
 }
 
@@ -99,6 +99,7 @@ pub fn measure_node(node: &MindmapNode, depth: usize, painter: &Painter) -> Vec2
 
 /// Draw a single node. Returns the screen-space rect for hit testing.
 /// `alpha` controls overall opacity (1.0 = normal, 0.3 = dimmed for drag source).
+#[allow(clippy::too_many_arguments)]
 pub fn draw_node(
     painter: &Painter,
     node: &MindmapNode,
@@ -392,6 +393,7 @@ pub fn draw_node(
 
 /// Draw a ghost node at an arbitrary screen position with rotation and transparency.
 /// Used for drag-and-drop visual feedback.
+#[allow(clippy::too_many_arguments)]
 pub fn draw_node_ghost(
     painter: &Painter,
     node: &MindmapNode,

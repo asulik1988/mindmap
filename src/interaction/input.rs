@@ -21,6 +21,7 @@ pub struct InputResult {
 }
 
 /// Handle all input: pan, zoom, selection, keyboard shortcuts.
+#[allow(clippy::too_many_arguments)]
 pub fn handle_input(
     ui: &Ui,
     response: &Response,
@@ -249,7 +250,7 @@ pub fn handle_input(
             egui::Event::Cut => {
                 if !selection.selected.is_empty() {
                     let deduped = tree.deduplicate_selection(&selection.selected);
-                    let has_root = deduped.iter().any(|&id| id == tree.root);
+                    let has_root = deduped.contains(&tree.root);
                     if !has_root && !deduped.is_empty() {
                         clipboard.clear();
                         for &id in &deduped {
@@ -531,7 +532,7 @@ pub fn handle_input(
                     if !selection.selected.is_empty() {
                         let deduped = tree.deduplicate_selection(&selection.selected);
                         // Skip if any selected node is root
-                        let has_root = deduped.iter().any(|&id| id == tree.root);
+                        let has_root = deduped.contains(&tree.root);
                         if !has_root && !deduped.is_empty() {
                             // Copy first
                             clipboard.clear();
