@@ -2,7 +2,9 @@
 ; Build: iscc installer\mindmap-installer.iss
 
 #define MyAppName "Mindmap"
-#define MyAppVersion "0.1.0"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.1.0"
+#endif
 #define MyAppPublisher "Adam Sulik"
 #define MyAppURL "https://github.com/asulik1988/mindmap"
 #define MyAppExeName "mindmap.exe"
