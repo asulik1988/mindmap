@@ -64,7 +64,7 @@ pub fn measure_all_nodes(tree: &mut crate::model::MindmapTree, painter: &Painter
 
         // Check time budget every 500 nodes (Instant::now is not free)
         count += 1;
-        if count % 500 == 0 && start.elapsed() > budget {
+        if count.is_multiple_of(500) && start.elapsed() > budget {
             let remaining: usize = visible
                 .iter()
                 .filter(|&&id| !tree.nodes[id].measured && !tree.nodes[id].text.is_empty())
