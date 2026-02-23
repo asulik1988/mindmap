@@ -129,7 +129,12 @@ pub fn draw_edges(
                     ..Default::default()
                 };
                 let paths = wobble::rough_bezier_edge(
-                    src_screen, cp1, cp2, tgt_screen, edge_seed, &rough_opts,
+                    src_screen,
+                    cp1,
+                    cp2,
+                    tgt_screen,
+                    edge_seed,
+                    &rough_opts,
                 );
                 for path in paths {
                     if path.len() >= 2 {

@@ -718,8 +718,7 @@ pub fn draw_aggregation_placeholder(
             disable_multi_stroke: true,
             ..Default::default()
         };
-        let badge_paths =
-            wobble::rough_rounded_rect(pill_rect, rounding, seed, &badge_opts);
+        let badge_paths = wobble::rough_rounded_rect(pill_rect, rounding, seed, &badge_opts);
         let border = Stroke::new(1.0 * viewport.zoom, palette.stroke);
         for path in badge_paths {
             if path.len() >= 2 {

@@ -56,7 +56,10 @@ pub struct MindmapApp {
     /// Timed error toast: (message, expiry time in seconds since app start).
     error_toast: Option<(String, f64)>,
     /// Background file loading task: (file path, thread handle).
-    loading_task: Option<(PathBuf, std::thread::JoinHandle<anyhow::Result<MindmapTree>>)>,
+    loading_task: Option<(
+        PathBuf,
+        std::thread::JoinHandle<anyhow::Result<MindmapTree>>,
+    )>,
     /// True when there are still unmeasured visible nodes that need incremental measurement.
     needs_incremental_measure: bool,
 }
@@ -96,7 +99,11 @@ fn relayout_only(tree: &mut MindmapTree, zoom: f32) {
     tree.cache_visible_nodes();
     let t0 = Instant::now();
     reingold_tilford::layout(tree, zoom);
-    log::info!("relayout_only: {}ms ({} nodes)", t0.elapsed().as_millis(), tree.nodes.len());
+    log::info!(
+        "relayout_only: {}ms ({} nodes)",
+        t0.elapsed().as_millis(),
+        tree.nodes.len()
+    );
 }
 
 /// Unfold the path to `nid` and relayout if anything changed.
@@ -571,20 +578,22 @@ impl MindmapApp {
         // Spawn file loading on a background thread so the UI stays responsive.
         // The SAX parser is iterative (not recursive), so no large stack needed.
         let path_clone = path.clone();
-        match std::thread::Builder::new()
-            .spawn(move || {
-                let xml = std::fs::read_to_string(&path_clone)
-                    .map_err(|e| anyhow::anyhow!("Failed to read file: {}", e))?;
-                let mut tree = crate::io::freemind_read::parse_mm_xml(&xml)?;
-                // Auto-fold large files on the background thread so the main
-                // thread never blocks on the 1M-node scan.
-                let total = tree.nodes.len();
-                if total > 200 {
-                    tree.auto_fold_for_display(200);
-                    log::info!("Auto-folded large file ({} nodes) for initial display", total);
-                }
-                Ok(tree)
-            }) {
+        match std::thread::Builder::new().spawn(move || {
+            let xml = std::fs::read_to_string(&path_clone)
+                .map_err(|e| anyhow::anyhow!("Failed to read file: {}", e))?;
+            let mut tree = crate::io::freemind_read::parse_mm_xml(&xml)?;
+            // Auto-fold large files on the background thread so the main
+            // thread never blocks on the 1M-node scan.
+            let total = tree.nodes.len();
+            if total > 200 {
+                tree.auto_fold_for_display(200);
+                log::info!(
+                    "Auto-folded large file ({} nodes) for initial display",
+                    total
+                );
+            }
+            Ok(tree)
+        }) {
             Ok(handle) => {
                 self.loading_task = Some((path, handle));
             }
@@ -594,10 +603,8 @@ impl MindmapApp {
                     .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| path.display().to_string());
-                self.error_toast = Some((
-                    format!("Failed to open \"{}\": {}", filename, e),
-                    f64::MAX,
-                ));
+                self.error_toast =
+                    Some((format!("Failed to open \"{}\": {}", filename, e), f64::MAX));
             }
         }
     }
@@ -873,17 +880,13 @@ impl eframe::App for MindmapApp {
                             .file_name()
                             .map(|n| n.to_string_lossy().to_string())
                             .unwrap_or_else(|| path.display().to_string());
-                        self.error_toast = Some((
-                            format!("Failed to open \"{}\": {}", filename, e),
-                            f64::MAX,
-                        ));
+                        self.error_toast =
+                            Some((format!("Failed to open \"{}\": {}", filename, e), f64::MAX));
                     }
                     Err(_) => {
                         log::error!("Loader thread panicked");
-                        self.error_toast = Some((
-                            "File loading failed (internal error)".to_string(),
-                            f64::MAX,
-                        ));
+                        self.error_toast =
+                            Some(("File loading failed (internal error)".to_string(), f64::MAX));
                     }
                 }
             } else {
@@ -906,18 +909,28 @@ impl eframe::App for MindmapApp {
                         let t_fit = Instant::now();
                         // First pass: measure text + layout at current zoom to get bounds
                         // (time-budgeted: may not measure all nodes on large trees)
-                        let has_remaining = measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
+                        let has_remaining =
+                            measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                         // Compute depth-aware zoom floor
-                        self.zoom_floor = viewport::depth_zoom_floor(tree.cached_max_depth, screen_rect.height());
+                        self.zoom_floor =
+                            viewport::depth_zoom_floor(tree.cached_max_depth, screen_rect.height());
                         let bounds = search_viewport::compute_tree_bounds(tree);
-                        self.viewport.fit_to_bounds(bounds, screen_rect, 80.0, self.zoom_floor);
+                        self.viewport
+                            .fit_to_bounds(bounds, screen_rect, 80.0, self.zoom_floor);
                         // Second pass: relayout with the fitted zoom for correct gap decay
                         relayout_only(tree, self.viewport.zoom);
                         let bounds = search_viewport::compute_tree_bounds(tree);
-                        self.viewport.fit_to_bounds(bounds, screen_rect, 80.0, self.zoom_floor);
+                        self.viewport
+                            .fit_to_bounds(bounds, screen_rect, 80.0, self.zoom_floor);
                         self.last_layout_zoom = self.viewport.zoom;
                         self.needs_incremental_measure = has_remaining;
-                        log::info!("initial_fit total: {}ms (remaining={}, max_depth={}, zoom_floor={})", t_fit.elapsed().as_millis(), has_remaining, tree.cached_max_depth, self.zoom_floor);
+                        log::info!(
+                            "initial_fit total: {}ms (remaining={}, max_depth={}, zoom_floor={})",
+                            t_fit.elapsed().as_millis(),
+                            has_remaining,
+                            tree.cached_max_depth,
+                            self.zoom_floor
+                        );
                     }
                     self.needs_initial_fit = false;
                 }
@@ -925,7 +938,8 @@ impl eframe::App for MindmapApp {
                 // Incremental measurement: continue measuring unmeasured nodes across frames
                 if self.needs_incremental_measure {
                     if let Some(ref mut tree) = self.tree {
-                        let has_remaining = measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
+                        let has_remaining =
+                            measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                         self.last_layout_zoom = self.viewport.zoom;
                         self.needs_incremental_measure = has_remaining;
                         if has_remaining {
@@ -1114,7 +1128,8 @@ impl eframe::App for MindmapApp {
                             > self.last_layout_zoom * 0.01;
 
                         if needs_relayout {
-                            let remaining = measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
+                            let remaining =
+                                measure_and_relayout(tree, ui.painter(), self.viewport.zoom);
                             self.last_layout_zoom = self.viewport.zoom;
                             if remaining {
                                 self.needs_incremental_measure = true;
@@ -1539,10 +1554,20 @@ impl eframe::App for MindmapApp {
                         if ui.input(|i| i.pointer.primary_clicked()) {
                             if minus_hovered {
                                 let center = screen_rect.center();
-                                self.viewport.zoom_around(center, -0.20, screen_rect, self.zoom_floor);
+                                self.viewport.zoom_around(
+                                    center,
+                                    -0.20,
+                                    screen_rect,
+                                    self.zoom_floor,
+                                );
                             } else if plus_hovered {
                                 let center = screen_rect.center();
-                                self.viewport.zoom_around(center, 0.25, screen_rect, self.zoom_floor);
+                                self.viewport.zoom_around(
+                                    center,
+                                    0.25,
+                                    screen_rect,
+                                    self.zoom_floor,
+                                );
                             } else if zoom_hovered {
                                 self.viewport.zoom = 1.0;
                                 self.viewport.offset = egui::Vec2::ZERO;
@@ -1805,18 +1830,21 @@ impl eframe::App for MindmapApp {
                 // --- Error toast ---
                 if let Some((msg, expiry)) = self.error_toast.take() {
                     let now = ui.input(|i| i.time);
-                    let expiry = if expiry == f64::MAX { now + 6.0 } else { expiry };
+                    let expiry = if expiry == f64::MAX {
+                        now + 6.0
+                    } else {
+                        expiry
+                    };
                     if now < expiry {
                         let font = egui::FontId::proportional(14.0);
-                        let text_width = ui.painter().layout_no_wrap(
-                            msg.clone(), font.clone(), egui::Color32::WHITE,
-                        ).rect.width();
+                        let text_width = ui
+                            .painter()
+                            .layout_no_wrap(msg.clone(), font.clone(), egui::Color32::WHITE)
+                            .rect
+                            .width();
                         let toast_width = (text_width + 40.0).min(screen_rect.width() - 40.0);
                         let toast_rect = egui::Rect::from_center_size(
-                            egui::pos2(
-                                screen_rect.center().x,
-                                screen_rect.min.y + 80.0,
-                            ),
+                            egui::pos2(screen_rect.center().x, screen_rect.min.y + 80.0),
                             egui::vec2(toast_width, 40.0),
                         );
                         ui.painter().rect_filled(
@@ -1872,8 +1900,8 @@ impl eframe::App for MindmapApp {
                     let rotation = (now * 3.0) as f32; // radians per second
                     let num_dots = 8;
                     for i in 0..num_dots {
-                        let angle = rotation
-                            + (i as f32) * std::f32::consts::TAU / (num_dots as f32);
+                        let angle =
+                            rotation + (i as f32) * std::f32::consts::TAU / (num_dots as f32);
                         let alpha = ((i as f32) / (num_dots as f32) * 200.0 + 55.0) as u8;
                         let wobble_x = ((angle * 7.3).sin() * 1.2) as f32;
                         let wobble_y = ((angle * 11.1).cos() * 1.2) as f32;

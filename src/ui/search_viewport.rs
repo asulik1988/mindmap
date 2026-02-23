@@ -563,7 +563,11 @@ pub(crate) fn draw_minimap(
     // Draw visible nodes as tiny rects (cap at 5000 to avoid drawing 1M sub-pixel rects)
     let visible = tree.visible_nodes();
     let minimap_limit = 5000;
-    let vis_slice = if visible.len() > minimap_limit { &visible[..minimap_limit] } else { &visible };
+    let vis_slice = if visible.len() > minimap_limit {
+        &visible[..minimap_limit]
+    } else {
+        &visible
+    };
     for &nid in vis_slice {
         let node = &tree.nodes[nid];
         let depth = node.cached_depth;

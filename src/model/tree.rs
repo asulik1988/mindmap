@@ -115,9 +115,7 @@ impl MindmapTree {
     pub fn visible_children(&self, node_id: NodeId) -> &[NodeId] {
         let node = &self.nodes[node_id];
         let children = &node.children;
-        if children.len() <= self.sibling_limit
-            || self.force_expanded.contains(&node_id)
-        {
+        if children.len() <= self.sibling_limit || self.force_expanded.contains(&node_id) {
             children
         } else {
             &children[..self.sibling_limit]
@@ -533,9 +531,7 @@ impl MindmapTree {
         // If this node's parent has sibling aggregation hiding it, force-expand
         if let Some(parent_id) = self.nodes[node_id].parent {
             let children = &self.nodes[parent_id].children;
-            if children.len() > self.sibling_limit
-                && !self.force_expanded.contains(&parent_id)
-            {
+            if children.len() > self.sibling_limit && !self.force_expanded.contains(&parent_id) {
                 // Check if node_id is beyond the visible slice
                 if let Some(idx) = children.iter().position(|&c| c == node_id) {
                     if idx >= self.sibling_limit {

@@ -60,7 +60,13 @@ impl Viewport {
         Rect::from_min_max(top_left, bottom_right)
     }
 
-    pub fn zoom_around(&mut self, screen_pivot: Pos2, delta: f32, screen_rect: Rect, min_zoom: f32) {
+    pub fn zoom_around(
+        &mut self,
+        screen_pivot: Pos2,
+        delta: f32,
+        screen_rect: Rect,
+        min_zoom: f32,
+    ) {
         let old_zoom = self.zoom;
         self.zoom = (self.zoom * (1.0 + delta)).clamp(min_zoom, MAX_ZOOM);
 

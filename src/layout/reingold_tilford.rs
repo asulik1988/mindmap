@@ -28,10 +28,7 @@ fn compute_all_subtree_heights(tree: &MindmapTree, zoom: f32) -> (Vec<f32>, Vec<
                 heights[id] = node_height;
             } else {
                 let gap = sibling_gap(depth, zoom);
-                let children_height: f32 = vis_children
-                    .iter()
-                    .map(|&c| heights[c])
-                    .sum::<f32>()
+                let children_height: f32 = vis_children.iter().map(|&c| heights[c]).sum::<f32>()
                     + gap * (vis_children.len() as f32 - 1.0).max(0.0);
                 heights[id] = children_height.max(node_height);
             }
@@ -87,10 +84,28 @@ pub fn layout(tree: &mut MindmapTree, zoom: f32) {
     let st_gap = subtree_gap(zoom);
 
     // Layout right side (positive X)
-    layout_side(tree, &heights, &depths, &right_children, 1.0, Side::Right, zoom, st_gap);
+    layout_side(
+        tree,
+        &heights,
+        &depths,
+        &right_children,
+        1.0,
+        Side::Right,
+        zoom,
+        st_gap,
+    );
 
     // Layout left side (negative X)
-    layout_side(tree, &heights, &depths, &left_children, -1.0, Side::Left, zoom, st_gap);
+    layout_side(
+        tree,
+        &heights,
+        &depths,
+        &left_children,
+        -1.0,
+        Side::Left,
+        zoom,
+        st_gap,
+    );
 
     // Cache the max depth across all visible nodes
     tree.cached_max_depth = depths.iter().copied().max().unwrap_or(0);
@@ -183,7 +198,18 @@ fn layout_subtree(
         let subtree_h = subtree_heights[i];
         let center_y = current_y + subtree_h / 2.0;
 
-        layout_subtree(tree, heights, depths, child_id, child_x, center_y, depth + 1, x_direction, side, zoom);
+        layout_subtree(
+            tree,
+            heights,
+            depths,
+            child_id,
+            child_x,
+            center_y,
+            depth + 1,
+            x_direction,
+            side,
+            zoom,
+        );
 
         current_y += subtree_h + gap;
     }

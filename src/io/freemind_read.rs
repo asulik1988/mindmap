@@ -21,10 +21,7 @@ fn parse_hex_color(s: &str) -> Option<Color32> {
 /// Helper: decode an XML attribute value into a Cow<str>, unescaping entities.
 /// Returns None if the attribute is not present.
 #[inline]
-fn attr_str<'a>(
-    e: &'a quick_xml::events::BytesStart<'a>,
-    name: &[u8],
-) -> Option<Cow<'a, str>> {
+fn attr_str<'a>(e: &'a quick_xml::events::BytesStart<'a>, name: &[u8]) -> Option<Cow<'a, str>> {
     e.try_get_attribute(name)
         .ok()
         .flatten()
@@ -223,7 +220,11 @@ pub fn parse_mm_xml(xml: &str) -> Result<MindmapTree> {
             Ok(_) => {} // Comments, CData, PI, Decl -- skip
 
             Err(e) => {
-                return Err(anyhow::anyhow!("XML parse error at position {}: {}", reader.error_position(), e));
+                return Err(anyhow::anyhow!(
+                    "XML parse error at position {}: {}",
+                    reader.error_position(),
+                    e
+                ));
             }
         }
     }
@@ -445,10 +446,7 @@ mod tests {
             tree.nodes.len()
         );
 
-        eprintln!(
-            "  total: {:.3}s",
-            (t_read + t_parse).as_secs_f64()
-        );
+        eprintln!("  total: {:.3}s", (t_read + t_parse).as_secs_f64());
 
         // Sanity checks
         assert!(tree.nodes.len() > 900_000, "Expected ~1M nodes");
