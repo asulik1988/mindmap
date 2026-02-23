@@ -114,6 +114,7 @@ pub fn layout(tree: &mut MindmapTree, zoom: f32) {
     compute_aggregation_placeholders(tree, &depths, zoom);
 }
 
+#[allow(clippy::too_many_arguments)]
 fn layout_side(
     tree: &mut MindmapTree,
     heights: &[f32],
@@ -158,6 +159,7 @@ fn layout_side(
     }
 }
 
+#[allow(clippy::too_many_arguments, clippy::only_used_in_recursion)]
 fn layout_subtree(
     tree: &mut MindmapTree,
     heights: &[f32],

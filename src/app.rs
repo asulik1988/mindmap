@@ -1903,8 +1903,8 @@ impl eframe::App for MindmapApp {
                         let angle =
                             rotation + (i as f32) * std::f32::consts::TAU / (num_dots as f32);
                         let alpha = ((i as f32) / (num_dots as f32) * 200.0 + 55.0) as u8;
-                        let wobble_x = ((angle * 7.3).sin() * 1.2) as f32;
-                        let wobble_y = ((angle * 11.1).cos() * 1.2) as f32;
+                        let wobble_x = (angle * 7.3).sin() * 1.2;
+                        let wobble_y = (angle * 11.1).cos() * 1.2;
                         let dot_pos = egui::pos2(
                             center.x + angle.cos() * spinner_r + wobble_x,
                             center.y + angle.sin() * spinner_r + wobble_y,

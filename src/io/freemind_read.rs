@@ -252,56 +252,54 @@ fn parse_node_from_attrs(
     let mut modified: Option<u64> = None;
     let mut link: Option<String> = None;
 
-    for attr_result in e.attributes().with_checks(false) {
-        if let Ok(attr) = attr_result {
-            match attr.key.as_ref() {
-                b"TEXT" => {
-                    text = attr.unescape_value().ok();
-                }
-                b"ID" => {
-                    id = attr.unescape_value().ok();
-                }
-                b"COLOR" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        color = parse_hex_color(&val);
-                    }
-                }
-                b"BACKGROUND_COLOR" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        background_color = parse_hex_color(&val);
-                    }
-                }
-                b"POSITION" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        position = Some(if val.as_ref() == "left" {
-                            Side::Left
-                        } else {
-                            Side::Right
-                        });
-                    }
-                }
-                b"FOLDED" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        folded = val.as_ref() == "true";
-                    }
-                }
-                b"CREATED" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        created = val.parse::<u64>().ok();
-                    }
-                }
-                b"MODIFIED" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        modified = val.parse::<u64>().ok();
-                    }
-                }
-                b"LINK" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        link = Some(val.into_owned());
-                    }
-                }
-                _ => {} // Ignore unknown attributes
+    for attr in e.attributes().with_checks(false).flatten() {
+        match attr.key.as_ref() {
+            b"TEXT" => {
+                text = attr.unescape_value().ok();
             }
+            b"ID" => {
+                id = attr.unescape_value().ok();
+            }
+            b"COLOR" => {
+                if let Ok(val) = attr.unescape_value() {
+                    color = parse_hex_color(&val);
+                }
+            }
+            b"BACKGROUND_COLOR" => {
+                if let Ok(val) = attr.unescape_value() {
+                    background_color = parse_hex_color(&val);
+                }
+            }
+            b"POSITION" => {
+                if let Ok(val) = attr.unescape_value() {
+                    position = Some(if val.as_ref() == "left" {
+                        Side::Left
+                    } else {
+                        Side::Right
+                    });
+                }
+            }
+            b"FOLDED" => {
+                if let Ok(val) = attr.unescape_value() {
+                    folded = val.as_ref() == "true";
+                }
+            }
+            b"CREATED" => {
+                if let Ok(val) = attr.unescape_value() {
+                    created = val.parse::<u64>().ok();
+                }
+            }
+            b"MODIFIED" => {
+                if let Ok(val) = attr.unescape_value() {
+                    modified = val.parse::<u64>().ok();
+                }
+            }
+            b"LINK" => {
+                if let Ok(val) = attr.unescape_value() {
+                    link = Some(val.into_owned());
+                }
+            }
+            _ => {} // Ignore unknown attributes
         }
     }
 
@@ -326,26 +324,24 @@ fn parse_node_from_attrs(
 /// Apply <font> attributes to an existing node.
 #[inline]
 fn apply_font_attrs(e: &quick_xml::events::BytesStart<'_>, node: &mut MindmapNode) {
-    for attr_result in e.attributes().with_checks(false) {
-        if let Ok(attr) = attr_result {
-            match attr.key.as_ref() {
-                b"BOLD" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        node.bold = val.as_ref() == "true";
-                    }
+    for attr in e.attributes().with_checks(false).flatten() {
+        match attr.key.as_ref() {
+            b"BOLD" => {
+                if let Ok(val) = attr.unescape_value() {
+                    node.bold = val.as_ref() == "true";
                 }
-                b"SIZE" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        node.font_size = val.parse::<f32>().ok();
-                    }
-                }
-                b"NAME" => {
-                    if let Ok(val) = attr.unescape_value() {
-                        node.font_name = Some(val.into_owned());
-                    }
-                }
-                _ => {}
             }
+            b"SIZE" => {
+                if let Ok(val) = attr.unescape_value() {
+                    node.font_size = val.parse::<f32>().ok();
+                }
+            }
+            b"NAME" => {
+                if let Ok(val) = attr.unescape_value() {
+                    node.font_name = Some(val.into_owned());
+                }
+            }
+            _ => {}
         }
     }
 }
