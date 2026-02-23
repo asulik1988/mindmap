@@ -478,28 +478,9 @@ pub(crate) fn draw_search_bar(
 }
 
 pub(crate) fn compute_all_nodes_bounds(tree: &MindmapTree) -> egui::Rect {
-    let mut min_x = f32::MAX;
-    let mut min_y = f32::MAX;
-    let mut max_x = f32::MIN;
-    let mut max_y = f32::MIN;
-    let mut found = false;
-    for node in &tree.nodes {
-        if node.text.is_empty() && node.id != tree.root {
-            continue;
-        }
-        let hw = node.layout_size.x / 2.0;
-        let hh = node.layout_size.y / 2.0;
-        min_x = min_x.min(node.layout_pos.x - hw);
-        max_x = max_x.max(node.layout_pos.x + hw);
-        min_y = min_y.min(node.layout_pos.y - hh);
-        max_y = max_y.max(node.layout_pos.y + hh);
-        found = true;
-    }
-    if found {
-        egui::Rect::from_min_max(egui::pos2(min_x, min_y), egui::pos2(max_x, max_y))
-    } else {
-        egui::Rect::from_min_max(egui::Pos2::ZERO, egui::Pos2::ZERO)
-    }
+    // Use visible nodes only — folded-away nodes have stale layout_pos
+    // and iterating 1M arena slots per frame is too slow for large files.
+    compute_tree_bounds(tree)
 }
 
 pub(crate) fn draw_minimap(
@@ -579,12 +560,13 @@ pub(crate) fn draw_minimap(
         )
     };
 
-    // Draw nodes as tiny rects
-    for node in &tree.nodes {
-        if node.text.is_empty() && node.id != tree.root {
-            continue;
-        }
-        let depth = node.depth(&tree.nodes);
+    // Draw visible nodes as tiny rects (cap at 5000 to avoid drawing 1M sub-pixel rects)
+    let visible = tree.visible_nodes();
+    let minimap_limit = 5000;
+    let vis_slice = if visible.len() > minimap_limit { &visible[..minimap_limit] } else { &visible };
+    for &nid in vis_slice {
+        let node = &tree.nodes[nid];
+        let depth = node.cached_depth;
         let palette = colors::node_palette_themed(depth, dark_mode, color_config);
         let node_min = canvas_to_mm(egui::pos2(
             node.layout_pos.x - node.layout_size.x / 2.0,

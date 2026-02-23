@@ -75,6 +75,7 @@ impl History {
     pub fn undo(&mut self, tree: &mut MindmapTree) -> bool {
         if let Some(action) = self.undo_stack.pop() {
             apply_reverse(tree, &action);
+            tree.invalidate_visible_cache();
             self.redo_stack.push(action);
             self.dirty = true;
             true
@@ -86,6 +87,7 @@ impl History {
     pub fn redo(&mut self, tree: &mut MindmapTree) -> bool {
         if let Some(action) = self.redo_stack.pop() {
             apply_forward(tree, &action);
+            tree.invalidate_visible_cache();
             self.undo_stack.push(action);
             self.dirty = true;
             true
@@ -140,6 +142,7 @@ fn apply_reverse(tree: &mut MindmapTree, action: &Action) {
             new_text: _,
         } => {
             tree.nodes[*node_id].text = old_text.clone();
+            tree.nodes[*node_id].measured = false;
         }
         Action::ToggleFold { node_id } => {
             tree.nodes[*node_id].folded = !tree.nodes[*node_id].folded;
@@ -224,6 +227,7 @@ fn apply_forward(tree: &mut MindmapTree, action: &Action) {
             new_text,
         } => {
             tree.nodes[*node_id].text = new_text.clone();
+            tree.nodes[*node_id].measured = false;
         }
         Action::ToggleFold { node_id } => {
             tree.nodes[*node_id].folded = !tree.nodes[*node_id].folded;

@@ -93,7 +93,7 @@ pub fn export_svg(tree: &MindmapTree, color_config: &DepthColorConfig) -> String
             continue;
         }
         let node = &tree.nodes[node_id];
-        let depth = tree.depth(node_id);
+        let depth = tree.nodes[node_id].cached_depth;
         let palette = colors::node_palette(depth, color_config);
 
         let fill_color = node.background_color.unwrap_or(palette.fill);

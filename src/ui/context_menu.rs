@@ -267,7 +267,7 @@ pub(crate) fn draw_context_menu(
     }
 
     // Determine the depth of the target node for the color picker
-    let target_depth = state.target_node.map(|id| tree.depth(id));
+    let target_depth = state.target_node.map(|id| tree.nodes[id].cached_depth);
 
     let panel_rect = context_menu_rect(
         state.pos,
@@ -421,7 +421,7 @@ pub(crate) fn draw_context_menu(
                         let visible = tree.visible_nodes();
                         let node_count = visible
                             .iter()
-                            .filter(|&&id| tree.depth(id) % 8 == depth % 8)
+                            .filter(|&&id| tree.nodes[id].cached_depth % 8 == depth % 8)
                             .count();
                         let level_name = if depth == 0 {
                             "Root".to_string()

@@ -45,6 +45,13 @@ pub struct MindmapNode {
 
     // Runtime state (not persisted)
     pub state: NodeState,
+    /// Depth from root (0 for root). Computed during layout.
+    pub cached_depth: usize,
+    /// Effective side (Left/Right) for this node. Computed during layout.
+    pub cached_side: Option<Side>,
+    /// Whether layout_size and display_text have been measured for the current text.
+    /// Set to true after measurement; cleared when text changes.
+    pub measured: bool,
 }
 
 impl MindmapNode {
@@ -70,9 +77,13 @@ impl MindmapNode {
             layout_size: Vec2::new(80.0, 36.0),
             display_text: String::new(),
             state: NodeState::Default,
+            cached_depth: 0,
+            cached_side: None,
+            measured: false,
         }
     }
 
+    #[cfg(test)]
     pub fn depth(&self, nodes: &[MindmapNode]) -> usize {
         let mut depth = 0;
         let mut current = self.parent;

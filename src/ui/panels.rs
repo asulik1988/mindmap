@@ -662,7 +662,7 @@ pub(crate) fn draw_notes_panel(
         let mut scroll_ui = ui.new_child(egui::UiBuilder::new().max_rect(content_rect));
         egui::ScrollArea::vertical().show(&mut scroll_ui, |ui| {
             for (entry_idx, &node_id) in notes_ids.iter().enumerate() {
-                let depth = tree.depth(node_id);
+                let depth = tree.nodes[node_id].cached_depth;
                 let dot_color = tree.nodes[node_id]
                     .background_color
                     .unwrap_or_else(|| colors::node_palette(depth, depth_color_config).fill);
@@ -969,7 +969,7 @@ pub(crate) fn draw_status_bar(
         .and_then(|f| f.to_str())
         .unwrap_or("Untitled");
 
-    let node_count = tree.visible_nodes().len();
+    let node_count = tree.nodes.len();
     let zoom_pct = (viewport.zoom * 100.0) as i32;
 
     let dirty_marker = if dirty { "● " } else { "" };

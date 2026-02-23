@@ -10,7 +10,11 @@ use std::collections::{HashMap, HashSet};
 /// Node screen rects for hit testing, keyed by NodeId.
 pub type NodeRects = HashMap<usize, Rect>;
 
+/// Minimum screen-space size (pixels) for a node to be rendered.
+const MIN_NODE_SCREEN_PX: f32 = 2.0;
+
 /// Main render function: draws the entire canvas.
+/// Returns (node_rects, placeholder_rects) for hit testing.
 #[allow(clippy::too_many_arguments)]
 pub fn draw_canvas(
     painter: &Painter,
@@ -23,21 +27,22 @@ pub fn draw_canvas(
     search_matches: &HashSet<NodeId>,
     search_current: Option<NodeId>,
     dark_mode: bool,
-) -> NodeRects {
+) -> (NodeRects, Vec<(NodeId, Rect)>) {
     // 1. Draw grid background
     grid::draw_grid(painter, viewport, screen_rect, dark_mode);
 
-    // 2. Get visible nodes
+    // 2. Get visible nodes + build HashSet for O(1) lookups
     let visible = tree.visible_nodes();
+    let visible_set: HashSet<NodeId> = visible.iter().copied().collect();
 
     // 3. Draw edges (behind nodes)
     edge_renderer::draw_edges(
         painter,
         tree,
         &visible,
+        &visible_set,
         viewport,
         screen_rect,
-        color_config,
         dark_mode,
     );
 
@@ -47,7 +52,12 @@ pub fn draw_canvas(
     let mut node_rects = HashMap::new();
     for &node_id in &visible {
         let node = &tree.nodes[node_id];
-        let depth = tree.depth(node_id);
+        let depth = node.cached_depth;
+
+        // Skip nodes with non-finite positions (layout overflow with extreme node counts)
+        if !node.layout_pos.x.is_finite() || !node.layout_pos.y.is_finite() {
+            continue;
+        }
 
         // Viewport culling: skip nodes far off-screen
         let screen_pos = viewport.canvas_to_screen(node.layout_pos, screen_rect);
@@ -57,6 +67,13 @@ pub fn draw_canvas(
             || screen_pos.y < screen_rect.min.y - margin
             || screen_pos.y > screen_rect.max.y + margin
         {
+            continue;
+        }
+
+        // LOD culling: skip nodes that are sub-pixel at current zoom
+        let screen_w = node.layout_size.x * viewport.zoom;
+        let screen_h = node.layout_size.y * viewport.zoom;
+        if screen_w < MIN_NODE_SCREEN_PX && screen_h < MIN_NODE_SCREEN_PX {
             continue;
         }
 
@@ -82,6 +99,29 @@ pub fn draw_canvas(
             dark_mode,
         );
         node_rects.insert(node_id, rect);
+    }
+
+    // 5. Draw aggregation placeholders ("+N more" pills)
+    let mut placeholder_rects: Vec<(NodeId, Rect)> = Vec::new();
+    for placeholder in &tree.aggregation_placeholders {
+        let screen_pos = viewport.canvas_to_screen(placeholder.layout_pos, screen_rect);
+        let margin = 200.0;
+        if screen_pos.x < screen_rect.min.x - margin
+            || screen_pos.x > screen_rect.max.x + margin
+            || screen_pos.y < screen_rect.min.y - margin
+            || screen_pos.y > screen_rect.max.y + margin
+        {
+            continue;
+        }
+        let rect = node_renderer::draw_aggregation_placeholder(
+            painter,
+            placeholder,
+            viewport,
+            screen_rect,
+            color_config,
+            dark_mode,
+        );
+        placeholder_rects.push((placeholder.parent_id, rect));
     }
 
     // Draw drop target highlight (wobbled style to match hand-drawn aesthetic)
@@ -114,7 +154,7 @@ pub fn draw_canvas(
         // Draw ghost node last (always on top)
         let ghost_center = ds.cursor_pos - ds.grab_offset;
         let node = &tree.nodes[ds.node_id];
-        let depth = tree.depth(ds.node_id);
+        let depth = tree.nodes[ds.node_id].cached_depth;
         node_renderer::draw_node_ghost(
             painter,
             node,
@@ -128,5 +168,5 @@ pub fn draw_canvas(
         );
     }
 
-    node_rects
+    (node_rects, placeholder_rects)
 }

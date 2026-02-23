@@ -67,7 +67,7 @@ impl EditingState {
 
         let node = &tree.nodes[node_id];
         let screen_pos = viewport.canvas_to_screen(node.layout_pos, screen_rect);
-        let depth = node.depth(&tree.nodes);
+        let depth = node.cached_depth;
         let font_size = crate::style::colors::font_size_for_depth(depth) * viewport.zoom;
 
         let text_edit_width = 250.0 * viewport.zoom;
@@ -176,6 +176,7 @@ impl EditingState {
                         new_text: current_text.clone(),
                     });
                     tree.nodes[node_id].text = current_text;
+                    tree.nodes[node_id].measured = false;
                 } else {
                     // Restore original
                     tree.nodes[node_id].text = self.original_text.clone();
@@ -201,6 +202,7 @@ impl EditingState {
                     new_text: new_text.clone(),
                 });
                 tree.nodes[node_id].text = new_text;
+                tree.nodes[node_id].measured = false;
             }
             tree.nodes[node_id].state = NodeState::Default;
             self.active_node = None;
@@ -222,6 +224,7 @@ impl EditingState {
                     new_text: new_text.clone(),
                 });
                 tree.nodes[node_id].text = new_text;
+                tree.nodes[node_id].measured = false;
             }
             tree.nodes[node_id].state = NodeState::Default;
             self.active_node = None;
@@ -243,6 +246,7 @@ impl EditingState {
                     new_text: new_text.clone(),
                 });
                 tree.nodes[node_id].text = new_text;
+                tree.nodes[node_id].measured = false;
             }
             tree.nodes[node_id].state = NodeState::Default;
             self.active_node = None;
@@ -264,6 +268,7 @@ impl EditingState {
                     new_text: new_text.clone(),
                 });
                 tree.nodes[node_id].text = new_text;
+                tree.nodes[node_id].measured = false;
             }
             tree.nodes[node_id].state = NodeState::Default;
             self.active_node = None;
@@ -272,6 +277,7 @@ impl EditingState {
 
         // Keep node text in sync while editing
         tree.nodes[node_id].text = self.text_buffer.clone();
+        tree.nodes[node_id].measured = false;
         EditResult::None
     }
 }

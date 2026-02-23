@@ -6,31 +6,34 @@ pub fn export_markdown(tree: &MindmapTree) -> String {
     out
 }
 
-fn write_node_md(tree: &MindmapTree, id: NodeId, depth: usize, out: &mut String) {
-    let node = &tree.nodes[id];
-    if node.text.is_empty() && id != tree.root {
-        return; // skip deleted nodes
-    }
-
-    // Heading level: depth 0-5 → # to ######, deeper → indented bullet
-    if depth <= 5 {
-        let hashes = "#".repeat(depth + 1);
-        out.push_str(&format!("{} {}\n", hashes, node.text));
-    } else {
-        let indent = "  ".repeat(depth - 6);
-        out.push_str(&format!("{}- {}\n", indent, node.text));
-    }
-
-    // Notes as blockquote
-    if !node.notes.is_empty() {
-        for line in node.notes.lines() {
-            out.push_str(&format!("> {}\n", line));
+fn write_node_md(tree: &MindmapTree, root: NodeId, root_depth: usize, out: &mut String) {
+    let mut stack: Vec<(NodeId, usize)> = vec![(root, root_depth)];
+    while let Some((id, depth)) = stack.pop() {
+        let node = &tree.nodes[id];
+        if node.text.is_empty() && id != tree.root {
+            continue; // skip deleted nodes
         }
-        out.push('\n');
-    }
 
-    for &child_id in &node.children {
-        write_node_md(tree, child_id, depth + 1, out);
+        // Heading level: depth 0-5 → # to ######, deeper → indented bullet
+        if depth <= 5 {
+            let hashes = "#".repeat(depth + 1);
+            out.push_str(&format!("{} {}\n", hashes, node.text));
+        } else {
+            let indent = "  ".repeat(depth - 6);
+            out.push_str(&format!("{}- {}\n", indent, node.text));
+        }
+
+        // Notes as blockquote
+        if !node.notes.is_empty() {
+            for line in node.notes.lines() {
+                out.push_str(&format!("> {}\n", line));
+            }
+            out.push('\n');
+        }
+
+        for &child_id in node.children.iter().rev() {
+            stack.push((child_id, depth + 1));
+        }
     }
 }
 

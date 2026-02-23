@@ -1,6 +1,20 @@
 use super::clipboard::SubtreeBlueprint;
 use super::node::{MindmapNode, NodeId, Side};
+use egui::{Pos2, Vec2};
 use std::collections::{HashMap, HashSet};
+
+/// Ephemeral rendering artifact for a "+N more" pill shown when a parent
+/// has more children than `sibling_limit`.
+#[derive(Clone, Debug)]
+#[allow(dead_code)]
+pub struct AggregationPlaceholder {
+    pub parent_id: NodeId,
+    pub hidden_count: usize,
+    pub layout_pos: Pos2,
+    pub layout_size: Vec2,
+    pub side: Option<Side>,
+    pub depth: usize,
+}
 
 #[derive(Clone, Debug)]
 pub struct MindmapTree {
@@ -8,6 +22,16 @@ pub struct MindmapTree {
     pub root: NodeId,
     id_map: HashMap<String, NodeId>,
     next_freemind_id: u64,
+    /// Cached result of visible_nodes(). Invalidated by `invalidate_visible_cache()`.
+    cached_visible: Option<Vec<NodeId>>,
+    /// Maximum depth of visible nodes, set by layout.
+    pub cached_max_depth: usize,
+    /// Maximum number of children shown per parent before aggregation.
+    pub sibling_limit: usize,
+    /// Parents whose "+N more" pill was clicked — show all children.
+    pub force_expanded: HashSet<NodeId>,
+    /// Rebuilt each layout pass — ephemeral placeholders for hidden siblings.
+    pub aggregation_placeholders: Vec<AggregationPlaceholder>,
 }
 
 impl MindmapTree {
@@ -28,6 +52,11 @@ impl MindmapTree {
             root,
             id_map,
             next_freemind_id: max_id + 1,
+            cached_visible: None,
+            cached_max_depth: 0,
+            sibling_limit: 20,
+            force_expanded: HashSet::new(),
+            aggregation_placeholders: Vec::new(),
         }
     }
 
@@ -58,16 +87,65 @@ impl MindmapTree {
     }
 
     /// Get all visible node IDs (skipping children of folded nodes).
-    /// Uses iterative DFS to avoid cloning children vecs.
+    /// Returns a cached result when available. Call `invalidate_visible_cache()`
+    /// after changing fold state or tree structure.
     pub fn visible_nodes(&self) -> Vec<NodeId> {
+        if let Some(ref cached) = self.cached_visible {
+            return cached.clone();
+        }
+        self.compute_visible_nodes()
+    }
+
+    /// Recompute and cache visible nodes. Call this once per frame or after
+    /// fold/structure changes, then use `visible_nodes()` which returns the cache.
+    pub fn cache_visible_nodes(&mut self) {
+        let v = self.compute_visible_nodes();
+        self.cached_visible = Some(v);
+    }
+
+    /// Invalidate the cached visible nodes. Called when fold state or tree
+    /// structure changes.
+    pub fn invalidate_visible_cache(&mut self) {
+        self.cached_visible = None;
+        self.aggregation_placeholders.clear();
+    }
+
+    /// Returns the visible children slice for a node, respecting sibling_limit.
+    /// Zero-copy: returns a sub-slice of the node's children Vec.
+    pub fn visible_children(&self, node_id: NodeId) -> &[NodeId] {
+        let node = &self.nodes[node_id];
+        let children = &node.children;
+        if children.len() <= self.sibling_limit
+            || self.force_expanded.contains(&node_id)
+        {
+            children
+        } else {
+            &children[..self.sibling_limit]
+        }
+    }
+
+    /// Number of children hidden by sibling aggregation for a given parent.
+    pub fn hidden_child_count(&self, node_id: NodeId) -> usize {
+        let total = self.nodes[node_id].children.len();
+        let visible = self.visible_children(node_id).len();
+        total - visible
+    }
+
+    /// Expand a parent to show all its children (clicked "+N more").
+    pub fn expand_siblings(&mut self, parent_id: NodeId) {
+        self.force_expanded.insert(parent_id);
+        self.invalidate_visible_cache();
+    }
+
+    fn compute_visible_nodes(&self) -> Vec<NodeId> {
         let mut result = Vec::new();
         let mut stack = vec![self.root];
         while let Some(id) = stack.pop() {
             result.push(id);
             let node = &self.nodes[id];
             if !node.folded {
-                // Push in reverse to preserve left-to-right DFS order
-                for &child_id in node.children.iter().rev() {
+                // Use visible_children to respect sibling_limit
+                for &child_id in self.visible_children(id).iter().rev() {
                     stack.push(child_id);
                 }
             }
@@ -108,6 +186,7 @@ impl MindmapTree {
 
         // Unfold parent so the new child is visible
         self.nodes[parent_id].folded = false;
+        self.cached_visible = None;
 
         new_id
     }
@@ -138,6 +217,7 @@ impl MindmapTree {
             .position(|&c| c == node_id)
             .unwrap_or(0);
         self.nodes[parent_id].children.insert(idx + 1, new_id);
+        self.cached_visible = None;
 
         new_id
     }
@@ -169,6 +249,7 @@ impl MindmapTree {
             self.nodes[id].parent = None;
             self.nodes[id].text = String::new();
         }
+        self.cached_visible = None;
 
         Some(subtree)
     }
@@ -186,51 +267,84 @@ impl MindmapTree {
     pub fn toggle_fold(&mut self, node_id: NodeId) {
         if !self.nodes[node_id].children.is_empty() {
             self.nodes[node_id].folded = !self.nodes[node_id].folded;
+            self.cached_visible = None;
         }
     }
 
     /// Progressively fold nodes from the deepest foldable level upward until
     /// the visible node count is at or below `max_visible`. Used on load to
     /// keep large files navigable. Already-folded nodes are left as-is.
+    ///
+    /// Single DFS to compute depths and group foldable nodes by depth, then
+    /// folds from deepest upward. Counts descendant subtree sizes to update
+    /// the visible count without re-traversing the tree.
     pub fn auto_fold_for_display(&mut self, max_visible: usize) {
-        loop {
-            // DFS to count visible nodes and find the deepest foldable level
-            let mut visible_count = 0usize;
-            let mut max_foldable_depth = 0usize;
-            let mut stack: Vec<(NodeId, usize)> = vec![(self.root, 0)];
-            let mut foldable_at_depth: Vec<NodeId> = Vec::new();
+        // Single DFS: compute depth for every visible node, and count
+        // the number of visible descendants under each node.
+        let n = self.nodes.len();
+        let mut depth_of = vec![0usize; n];
+        let mut subtree_visible = vec![1usize; n]; // each node counts itself
+        let mut max_depth = 0usize;
 
-            while let Some((id, depth)) = stack.pop() {
-                visible_count += 1;
+        // Post-order DFS so we can compute subtree sizes bottom-up.
+        let mut stack: Vec<(NodeId, bool)> = vec![(self.root, false)];
+        while let Some((id, processed)) = stack.pop() {
+            if processed {
+                // Sum children's subtree sizes into this node.
                 let node = &self.nodes[id];
                 if !node.folded {
-                    for &child_id in &node.children {
-                        stack.push((child_id, depth + 1));
+                    for &c in &node.children {
+                        subtree_visible[id] += subtree_visible[c];
                     }
                 }
-                // Track the deepest depth with foldable (non-leaf, unfolded) nodes
-                if !node.children.is_empty() && !node.folded {
-                    if depth > max_foldable_depth {
-                        max_foldable_depth = depth;
-                        foldable_at_depth.clear();
-                    }
-                    if depth == max_foldable_depth {
-                        foldable_at_depth.push(id);
+            } else {
+                stack.push((id, true));
+                let node = &self.nodes[id];
+                if !node.folded {
+                    let child_depth = depth_of[id] + 1;
+                    for &c in node.children.iter().rev() {
+                        depth_of[c] = child_depth;
+                        if child_depth > max_depth {
+                            max_depth = child_depth;
+                        }
+                        stack.push((c, false));
                     }
                 }
-            }
-
-            if visible_count <= max_visible || max_foldable_depth <= 1 {
-                break;
-            }
-
-            if foldable_at_depth.is_empty() {
-                break;
-            }
-            for id in &foldable_at_depth {
-                self.nodes[*id].folded = true;
             }
         }
+
+        let mut visible_count = subtree_visible[self.root];
+        if visible_count <= max_visible {
+            return;
+        }
+
+        // Group foldable (non-leaf, unfolded) node IDs by depth.
+        let mut by_depth: Vec<Vec<NodeId>> = vec![Vec::new(); max_depth + 1];
+        for id in 0..n {
+            if !self.nodes[id].children.is_empty()
+                && !self.nodes[id].folded
+                && !self.nodes[id].text.is_empty()
+            {
+                by_depth[depth_of[id]].push(id);
+            }
+        }
+
+        // Fold from deepest level upward.
+        for d in (2..=max_depth).rev() {
+            for &id in &by_depth[d] {
+                if !self.nodes[id].folded {
+                    self.nodes[id].folded = true;
+                    // Folding this node hides its descendants (subtract them,
+                    // but the node itself stays visible).
+                    let hidden = subtree_visible[id] - 1;
+                    visible_count -= hidden;
+                }
+            }
+            if visible_count <= max_visible {
+                break;
+            }
+        }
+        self.cached_visible = None;
     }
 
     /// First visible (not folded-away) child of a node.
@@ -239,13 +353,13 @@ impl MindmapTree {
         if node.folded {
             return None;
         }
-        node.children.first().copied()
+        self.visible_children(node_id).first().copied()
     }
 
-    /// Previous sibling in parent's children list.
+    /// Previous sibling in parent's visible children list.
     pub fn prev_sibling(&self, node_id: NodeId) -> Option<NodeId> {
         let parent_id = self.nodes[node_id].parent?;
-        let children = &self.nodes[parent_id].children;
+        let children = self.visible_children(parent_id);
         let idx = children.iter().position(|&c| c == node_id)?;
         if idx > 0 {
             Some(children[idx - 1])
@@ -254,10 +368,10 @@ impl MindmapTree {
         }
     }
 
-    /// Next sibling in parent's children list.
+    /// Next sibling in parent's visible children list.
     pub fn next_sibling(&self, node_id: NodeId) -> Option<NodeId> {
         let parent_id = self.nodes[node_id].parent?;
-        let children = &self.nodes[parent_id].children;
+        let children = self.visible_children(parent_id);
         let idx = children.iter().position(|&c| c == node_id)?;
         if idx + 1 < children.len() {
             Some(children[idx + 1])
@@ -317,6 +431,7 @@ impl MindmapTree {
             .position(|&c| c == node_id)
             .unwrap_or(0);
         self.nodes[parent_id].children.insert(idx, new_id);
+        self.cached_visible = None;
 
         new_id
     }
@@ -379,6 +494,7 @@ impl MindmapTree {
 
         // Unfold new parent so moved node is visible
         self.nodes[new_parent].folded = false;
+        self.cached_visible = None;
 
         Some((old_parent, old_index, old_position))
     }
@@ -409,9 +525,27 @@ impl MindmapTree {
     }
 
     /// Walk ancestors of `node_id` and unfold any that are folded.
-    /// Returns true if any ancestor was unfolded.
+    /// Also auto-expands parents where `node_id` is hidden by sibling aggregation.
+    /// Returns true if any ancestor was unfolded or expanded.
     pub fn unfold_path_to(&mut self, node_id: NodeId) -> bool {
         let mut changed = false;
+
+        // If this node's parent has sibling aggregation hiding it, force-expand
+        if let Some(parent_id) = self.nodes[node_id].parent {
+            let children = &self.nodes[parent_id].children;
+            if children.len() > self.sibling_limit
+                && !self.force_expanded.contains(&parent_id)
+            {
+                // Check if node_id is beyond the visible slice
+                if let Some(idx) = children.iter().position(|&c| c == node_id) {
+                    if idx >= self.sibling_limit {
+                        self.force_expanded.insert(parent_id);
+                        changed = true;
+                    }
+                }
+            }
+        }
+
         let mut current = self.nodes[node_id].parent;
         while let Some(pid) = current {
             if self.nodes[pid].folded {
@@ -419,6 +553,9 @@ impl MindmapTree {
                 changed = true;
             }
             current = self.nodes[pid].parent;
+        }
+        if changed {
+            self.cached_visible = None;
         }
         changed
     }
@@ -533,6 +670,7 @@ impl MindmapTree {
         self.nodes[parent_id].children.push(new_root_id);
         // Unfold parent so pasted child is visible
         self.nodes[parent_id].folded = false;
+        self.cached_visible = None;
 
         (new_root_id, all_new_ids)
     }

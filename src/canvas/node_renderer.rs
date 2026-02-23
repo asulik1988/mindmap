@@ -14,6 +14,10 @@ const MIN_NODE_WIDTH: f32 = 80.0;
 const MAX_NODE_WIDTH: f32 = 280.0;
 const ROUGHNESS: f32 = 0.5;
 const SELECTION_COLOR: Color32 = Color32::from_rgb(30, 136, 229); // #1E88E5
+/// Zoom threshold below which we skip wobble/hachure and render simple shapes.
+const LOD_DETAIL_ZOOM: f32 = 0.3;
+/// Minimum screen-space font size to render text (below this, text is unreadable).
+const MIN_TEXT_SCREEN_SIZE: f32 = 4.0;
 
 fn cr(r: f32) -> CornerRadius {
     CornerRadius::same(r.round().clamp(0.0, 255.0) as u8)
@@ -38,12 +42,42 @@ fn rotate_point(p: Pos2, center: Pos2, angle_rad: f32) -> Pos2 {
 }
 
 /// Pre-measure all nodes and store sizes + pre-wrapped display text for layout.
-pub fn measure_all_nodes(tree: &mut crate::model::MindmapTree, painter: &Painter) {
-    for node_id in 0..tree.nodes.len() {
+/// Only measures visible (not folded-away) nodes for performance on large trees.
+/// Skips nodes that are already measured (measured == true) for fast unfold.
+///
+/// Uses a time budget to avoid blocking the UI thread on large trees.
+/// Returns `true` if there are still unmeasured visible nodes remaining.
+pub fn measure_all_nodes(tree: &mut crate::model::MindmapTree, painter: &Painter) -> bool {
+    let visible = tree.visible_nodes();
+    let start = std::time::Instant::now();
+    // Budget: 32ms keeps the app responsive at ~30fps while measuring
+    let budget = std::time::Duration::from_millis(32);
+    let mut count = 0u32;
+
+    for &node_id in &visible {
+        if tree.nodes[node_id].measured {
+            continue; // already measured, skip
+        }
         if tree.nodes[node_id].text.is_empty() {
             continue; // skip deleted nodes
         }
-        let depth = tree.depth(node_id);
+
+        // Check time budget every 500 nodes (Instant::now is not free)
+        count += 1;
+        if count % 500 == 0 && start.elapsed() > budget {
+            let remaining: usize = visible
+                .iter()
+                .filter(|&&id| !tree.nodes[id].measured && !tree.nodes[id].text.is_empty())
+                .count();
+            log::info!(
+                "measure_all_nodes: budget exhausted after {} nodes, ~{} remaining",
+                count,
+                remaining
+            );
+            return true; // more work remaining
+        }
+
+        let depth = tree.nodes[node_id].cached_depth;
         let font_size = colors::font_size_for_depth(depth);
         let font_id = FontId::proportional(font_size);
         let max_text_width = MAX_NODE_WIDTH - NODE_PADDING_H * 2.0;
@@ -77,24 +111,9 @@ pub fn measure_all_nodes(tree: &mut crate::model::MindmapTree, painter: &Painter
             }
         }
         tree.nodes[node_id].display_text = display_text;
+        tree.nodes[node_id].measured = true;
     }
-}
-
-/// Measure a node's size in canvas coordinates.
-pub fn measure_node(node: &MindmapNode, depth: usize, painter: &Painter) -> Vec2 {
-    let font_size = colors::font_size_for_depth(depth);
-    let font_id = FontId::proportional(font_size);
-    let max_text_width = MAX_NODE_WIDTH - NODE_PADDING_H * 2.0;
-
-    // Use wrapping layout so long text doesn't overflow
-    let galley = painter.layout(node.text.clone(), font_id, Color32::BLACK, max_text_width);
-    let text_width = galley.size().x.max(MIN_NODE_WIDTH - NODE_PADDING_H * 2.0);
-    let text_height = galley.size().y;
-
-    Vec2::new(
-        text_width + NODE_PADDING_H * 2.0,
-        text_height + NODE_PADDING_V * 2.0,
-    )
+    false // all done
 }
 
 /// Draw a single node. Returns the screen-space rect for hit testing.
@@ -121,20 +140,119 @@ pub fn draw_node(
     let node_h = node.layout_size.y * viewport.zoom;
     let node_rect = Rect::from_center_size(screen_pos, Vec2::new(node_w, node_h));
 
+    let is_selected = selection.is_selected(node.id);
+    let is_hovered = selection.hovered == Some(node.id);
+
+    // LOD: simplified rendering when zoomed out (no wobble/hachure — pure geometry)
+    if viewport.zoom < LOD_DETAIL_ZOOM {
+        let (fill, stroke_color, stroke_width) = match node.state {
+            NodeState::Editing => (Color32::WHITE, SELECTION_COLOR, palette.stroke_width + 1.0),
+            _ if is_selected => (palette.fill, SELECTION_COLOR, palette.stroke_width + 0.5),
+            _ if is_hovered => (
+                lighten(palette.fill, 0.05),
+                palette.stroke,
+                palette.stroke_width + 0.5,
+            ),
+            _ => (palette.fill, palette.stroke, palette.stroke_width),
+        };
+        let rounding = NODE_ROUNDING * viewport.zoom;
+        let sw = stroke_width * viewport.zoom;
+
+        // Single filled rect with border
+        painter.add(RectShape::new(
+            node_rect,
+            cr(rounding),
+            with_alpha(fill, alpha),
+            Stroke::new(sw, with_alpha(stroke_color, alpha)),
+            StrokeKind::Outside,
+        ));
+
+        // Text only if screen-size font is readable
+        let font_size = colors::font_size_for_depth(depth) * viewport.zoom;
+        if font_size >= MIN_TEXT_SCREEN_SIZE {
+            let font_id = FontId::proportional(font_size);
+            let pad_h = NODE_PADDING_H * viewport.zoom;
+            let pad_v = NODE_PADDING_V * viewport.zoom;
+            let lod_text = if node.display_text.is_empty() && !node.text.is_empty() {
+                &node.text
+            } else {
+                &node.display_text
+            };
+            let text_galley = painter.layout(
+                lod_text.clone(),
+                font_id,
+                with_alpha(palette.text, alpha),
+                f32::INFINITY,
+            );
+            let text_pos = Pos2::new(node_rect.min.x + pad_h, node_rect.min.y + pad_v);
+            if node.bold {
+                painter.galley(
+                    text_pos + egui::vec2(0.7, 0.0),
+                    text_galley.clone(),
+                    with_alpha(palette.text, alpha),
+                );
+            }
+            painter.galley(text_pos, text_galley, with_alpha(palette.text, alpha));
+        }
+
+        // Selection ring (simple)
+        if is_selected && alpha > 0.9 {
+            let ring_rect = node_rect.expand(3.0 * viewport.zoom);
+            let ring_rounding = (NODE_ROUNDING + 3.0) * viewport.zoom;
+            painter.add(RectShape::new(
+                ring_rect,
+                cr(ring_rounding),
+                Color32::from_rgba_premultiplied(30, 136, 229, 15),
+                Stroke::new(
+                    1.5 * viewport.zoom,
+                    Color32::from_rgba_premultiplied(30, 136, 229, 200),
+                ),
+                StrokeKind::Outside,
+            ));
+        }
+
+        // Search highlight ring (simple)
+        if (is_search_match || is_current_search_match) && alpha > 0.9 {
+            let ring_rect = node_rect.expand(5.0 * viewport.zoom);
+            let ring_rounding = (NODE_ROUNDING + 5.0) * viewport.zoom;
+            let (ring_color, ring_sw) = if is_current_search_match {
+                (Color32::from_rgb(245, 166, 35), 2.0 * viewport.zoom)
+            } else {
+                (
+                    Color32::from_rgba_premultiplied(245, 166, 35, 160),
+                    1.5 * viewport.zoom,
+                )
+            };
+            painter.add(RectShape::new(
+                ring_rect,
+                cr(ring_rounding),
+                Color32::TRANSPARENT,
+                Stroke::new(ring_sw, ring_color),
+                StrokeKind::Outside,
+            ));
+        }
+
+        return node_rect;
+    }
+
     // Render pre-wrapped display text at screen-scale font size.
     // Line breaks were determined once at canvas scale, so text is stable across zoom levels.
+    // Fall back to raw text for unmeasured nodes (display_text empty before first measurement).
     let font_size = colors::font_size_for_depth(depth) * viewport.zoom;
     let font_id = FontId::proportional(font_size);
     let pad_h = NODE_PADDING_H * viewport.zoom;
     let pad_v = NODE_PADDING_V * viewport.zoom;
+    let render_text = if node.display_text.is_empty() && !node.text.is_empty() {
+        &node.text
+    } else {
+        &node.display_text
+    };
     let text_galley = painter.layout(
-        node.display_text.clone(),
+        render_text.clone(),
         font_id,
         with_alpha(palette.text, alpha),
         f32::INFINITY, // no re-wrapping — line breaks are already in display_text
     );
-    let is_selected = selection.is_selected(node.id);
-    let is_hovered = selection.hovered == Some(node.id);
 
     // Determine colors based on state
     let (fill, stroke_color, stroke_width) = match node.state {
@@ -542,6 +660,82 @@ pub fn draw_node_ghost(
         let rotated_text_pos = rotate_point(badge_text_pos, ghost_center, angle_rad);
         painter.galley(rotated_text_pos, badge_galley, badge_text_color);
     }
+}
+
+/// Draw a compact "+N more" pill for sibling aggregation.
+/// Returns the screen-space rect for hit testing.
+pub fn draw_aggregation_placeholder(
+    painter: &Painter,
+    placeholder: &crate::model::tree::AggregationPlaceholder,
+    viewport: &Viewport,
+    screen_rect: Rect,
+    color_config: &DepthColorConfig,
+    dark_mode: bool,
+) -> Rect {
+    let screen_pos = viewport.canvas_to_screen(placeholder.layout_pos, screen_rect);
+    let pill_w = placeholder.layout_size.x * viewport.zoom;
+    let pill_h = placeholder.layout_size.y * viewport.zoom;
+    let pill_rect = Rect::from_center_size(screen_pos, Vec2::new(pill_w, pill_h));
+
+    let depth = placeholder.depth;
+    let palette = colors::node_palette_themed(depth, dark_mode, color_config);
+
+    let text = format!("+{} more", placeholder.hidden_count);
+    let font_size = 11.0 * viewport.zoom;
+    let font_id = FontId::proportional(font_size);
+    let text_color = palette.stroke;
+    let text_galley = painter.layout_no_wrap(text, font_id, text_color);
+
+    // Pill background — lighter than normal nodes
+    let bg = if dark_mode {
+        Color32::from_rgb(35, 35, 40)
+    } else {
+        Color32::from_rgb(245, 245, 245)
+    };
+    let rounding = pill_h / 2.0;
+
+    // Use LOD threshold for detail level
+    if viewport.zoom < LOD_DETAIL_ZOOM {
+        // Simple pill
+        painter.add(RectShape::new(
+            pill_rect,
+            cr(rounding),
+            bg,
+            Stroke::new(1.0 * viewport.zoom, palette.stroke),
+            StrokeKind::Outside,
+        ));
+    } else {
+        // Filled background
+        painter.add(RectShape::filled(pill_rect, cr(rounding), bg));
+        // Wobbled border
+        let seed = (placeholder.parent_id as u32)
+            .wrapping_mul(2654435761)
+            .wrapping_add(9999);
+        let badge_opts = RoughOptions {
+            roughness: 0.4,
+            max_randomness_offset: 0.7,
+            bowing: 0.3,
+            disable_multi_stroke: true,
+            ..Default::default()
+        };
+        let badge_paths =
+            wobble::rough_rounded_rect(pill_rect, rounding, seed, &badge_opts);
+        let border = Stroke::new(1.0 * viewport.zoom, palette.stroke);
+        for path in badge_paths {
+            if path.len() >= 2 {
+                painter.add(PathShape::line(path, border));
+            }
+        }
+    }
+
+    // Center text in pill
+    let text_pos = Pos2::new(
+        pill_rect.center().x - text_galley.size().x / 2.0,
+        pill_rect.center().y - text_galley.size().y / 2.0,
+    );
+    painter.galley(text_pos, text_galley, text_color);
+
+    pill_rect
 }
 
 fn lighten(color: Color32, amount: f32) -> Color32 {

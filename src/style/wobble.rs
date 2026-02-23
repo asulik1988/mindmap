@@ -667,6 +667,15 @@ pub fn hachure_fill_rect(
         return Vec::new();
     }
 
+    // Skip rects with non-finite coordinates (can happen with extreme layout sizes)
+    if !rect.min.x.is_finite()
+        || !rect.min.y.is_finite()
+        || !rect.max.x.is_finite()
+        || !rect.max.y.is_finite()
+    {
+        return Vec::new();
+    }
+
     // Rectangle corners
     let corners = [
         (rect.min.x, rect.min.y),
@@ -719,7 +728,7 @@ pub fn hachure_fill_rect(
             islope,
         });
     }
-    edges.sort_by(|a, b| a.ymin.partial_cmp(&b.ymin).unwrap());
+    edges.sort_by(|a, b| a.ymin.total_cmp(&b.ymin));
 
     // Scan-line: collect horizontal line segments
     // Use a separate rng for gap jitter so it doesn't affect line drawing rng

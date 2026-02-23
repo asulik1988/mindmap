@@ -11,8 +11,7 @@ authors = ["Adam Sulik"]
 [dependencies]
 eframe = "0.31"
 egui = "0.31"
-quick-xml = { version = "0.37", features = ["serialize"] }
-serde = { version = "1", features = ["derive"] }
+quick-xml = "0.37"
 rfd = "0.15"
 anyhow = "1"
 thiserror = "2"

@@ -29,6 +29,7 @@ pub fn handle_input(
     tree: &mut MindmapTree,
     selection: &mut Selection,
     node_rects: &NodeRects,
+    placeholder_rects: &[(NodeId, Rect)],
     screen_rect: Rect,
     history: &mut History,
     editing: &mut EditingState,
@@ -36,6 +37,7 @@ pub fn handle_input(
     clipboard: &mut Clipboard,
     drag_state: &mut Option<DragState>,
     search_active: bool,
+    zoom_floor: f32,
 ) -> InputResult {
     let mut result = InputResult {
         needs_relayout: false,
@@ -75,7 +77,7 @@ pub fn handle_input(
                 && pointer.y >= screen_rect.min.y
                 && pointer.y <= screen_rect.max.y
             {
-                viewport.zoom_around(pointer, scroll * 0.002, screen_rect);
+                viewport.zoom_around(pointer, scroll * 0.002, screen_rect, zoom_floor);
             }
         }
     }
@@ -89,7 +91,7 @@ pub fn handle_input(
                 && pointer.y >= screen_rect.min.y
                 && pointer.y <= screen_rect.max.y
             {
-                viewport.zoom_around(pointer, pinch_delta - 1.0, screen_rect);
+                viewport.zoom_around(pointer, pinch_delta - 1.0, screen_rect, zoom_floor);
             }
         }
     }
@@ -192,37 +194,47 @@ pub fn handle_input(
     // --- Click to select + toggle fold/unfold ---
     if response.clicked() && !space_held {
         if let Some(pointer) = response.interact_pointer_pos() {
-            let clicked_node = find_node_at(pointer, node_rects);
-            if let Some(node_id) = clicked_node {
-                if modifiers.ctrl {
-                    selection.toggle(node_id);
-                } else {
-                    selection.select_single(node_id);
-                    // Toggle fold if the node has children
-                    if !tree.nodes[node_id].children.is_empty() {
-                        tree.toggle_fold(node_id);
-                        result.needs_relayout = true;
-                    }
-                }
+            // Check placeholder pills first ("+N more" click)
+            if let Some(parent_id) = find_placeholder_at(pointer, placeholder_rects) {
+                tree.expand_siblings(parent_id);
+                result.needs_relayout = true;
             } else {
-                selection.clear();
+                let clicked_node = find_node_at(pointer, node_rects);
+                if let Some(node_id) = clicked_node {
+                    if modifiers.ctrl {
+                        selection.toggle(node_id);
+                    } else {
+                        selection.select_single(node_id);
+                        // Toggle fold if the node has children
+                        if !tree.nodes[node_id].children.is_empty() {
+                            tree.toggle_fold(node_id);
+                            result.needs_relayout = true;
+                        }
+                    }
+                } else {
+                    selection.clear();
+                }
             }
         }
     }
 
     // --- Hover ---
+    let prev_hovered = selection.hovered;
     selection.hovered = None;
     if let Some(pointer) = ui.input(|i| i.pointer.hover_pos()) {
         selection.hovered = find_node_at(pointer, node_rects);
     }
 
-    // Update node hover states
-    for node in &mut tree.nodes {
-        if node.state != NodeState::Editing {
-            if selection.hovered == Some(node.id) {
-                node.state = NodeState::Hovered;
-            } else {
-                node.state = NodeState::Default;
+    // Update only the changed hover states (O(1) instead of O(n))
+    if prev_hovered != selection.hovered {
+        if let Some(old_id) = prev_hovered {
+            if old_id < tree.nodes.len() && tree.nodes[old_id].state != NodeState::Editing {
+                tree.nodes[old_id].state = NodeState::Default;
+            }
+        }
+        if let Some(new_id) = selection.hovered {
+            if tree.nodes[new_id].state != NodeState::Editing {
+                tree.nodes[new_id].state = NodeState::Hovered;
             }
         }
     }
@@ -638,7 +650,7 @@ pub fn handle_input(
                 // Ctrl+0: fit to screen
                 (Key::Num0, m) if m.ctrl => {
                     let bounds = compute_bounds(tree);
-                    viewport.fit_to_bounds(bounds, screen_rect, 80.0);
+                    viewport.fit_to_bounds(bounds, screen_rect, 80.0, zoom_floor);
                     key_consumed = true;
                 }
 
@@ -667,6 +679,13 @@ pub fn handle_input(
     }
 
     result
+}
+
+fn find_placeholder_at(pos: egui::Pos2, placeholder_rects: &[(NodeId, Rect)]) -> Option<NodeId> {
+    placeholder_rects
+        .iter()
+        .find(|(_, rect)| rect.contains(pos))
+        .map(|(parent_id, _)| *parent_id)
 }
 
 pub fn find_node_at(pos: egui::Pos2, node_rects: &NodeRects) -> Option<NodeId> {

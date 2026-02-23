@@ -1,10 +1,18 @@
 use crate::model::{MindmapTree, Side};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::fmt::Write as FmtWrite;
 use std::path::Path;
 
 pub fn save_mm_file(tree: &MindmapTree, path: &Path) -> Result<()> {
-    let xml = serialize_tree(tree)?;
+    // Spawn on a large-stack thread to handle deeply nested trees
+    let tree_clone = tree.clone();
+    let handle = std::thread::Builder::new()
+        .stack_size(128 * 1024 * 1024)
+        .spawn(move || serialize_tree(&tree_clone))
+        .context("Failed to spawn writer thread")?;
+    let xml = handle
+        .join()
+        .map_err(|_| anyhow::anyhow!("Writer thread panicked"))??;
     std::fs::write(path, xml)?;
     Ok(())
 }
